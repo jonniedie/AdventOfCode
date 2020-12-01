@@ -19,7 +19,7 @@ read_csv(f_name) = open(f->readdlm(f, ',', Int), f_name)
 
 Simple data reading function.
 """
-read_simple(f_name) = open(readlines, f_name)
+read_simple(T, f_name) = open(readlines, parse.(T, f_name))
 
 
 """
