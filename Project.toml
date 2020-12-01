@@ -2,3 +2,7 @@ name = "Advent2020"
 uuid = "8b47d74a-226b-4322-a5dc-2b3ad01ef292"
 authors = ["Jonnie <jonniediegelman@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"

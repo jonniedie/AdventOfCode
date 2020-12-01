@@ -1,5 +1,15 @@
 module Advent2020
 
-greet() = print("Hello World!")
+using DelimitedFiles: readdlm
+using OffsetArrays: OffsetArray
 
-end # module
+include("fileIO.jl")
+include("common.jl")
+
+for i in 1:1
+    load_day(i)
+end
+
+export zero_based
+
+end
