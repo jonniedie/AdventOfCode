@@ -1,9 +1,15 @@
+module FileIO
+
+export read_csv, read_simple, read_big
+
+import ..Advent2020
+
 """
     load_day(n)
 
 Load day `n`'s code.
 """
-load_day(n) = include(joinpath("Day"*string(n), "src", "code.jl"))
+load_day(n) = Advent2020.include(joinpath("..", "scripts", "Day"*string(n), "code.jl"))
 
 
 """
@@ -19,7 +25,7 @@ read_csv(f_name) = open(f->readdlm(f, ',', Int), f_name)
 
 Simple data reading function.
 """
-read_simple(T, f_name) = open(readlines, parse.(T, f_name))
+read_simple(f_name, T=Int) = parse.(T, open(readlines, f_name))
 
 
 """
@@ -28,3 +34,6 @@ read_simple(T, f_name) = open(readlines, parse.(T, f_name))
 Read in single big integer
 """
 read_big(f_name) = open(f->readlines(f)[1], f_name)
+
+
+end
