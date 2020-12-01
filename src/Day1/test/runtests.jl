@@ -1,5 +1,5 @@
 using Test, Advent2020
-using Advent2020.DayN
+using Advent2020.Day1
 
 @testset "Part 1" begin
     
