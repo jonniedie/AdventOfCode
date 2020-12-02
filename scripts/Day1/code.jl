@@ -16,7 +16,7 @@ const test_input1 = test_input2 = [
 const test_output1 = 514579
 const test_output2 = 241861950
 
-const data = read_simple(joinpath(@__DIR__, "input.txt")) |> sort
+const data = read_simple(joinpath(@__DIR__, "input.txt")) #|> sort
 
 
 ## Solution functions (change these)
