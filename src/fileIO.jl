@@ -8,14 +8,6 @@ using DelimitedFiles: readdlm
 
 
 """
-    load_day(n)
-
-Load day `n`'s code.
-"""
-load_day(n) = Advent2020.include(joinpath("..", "scripts", "Day"*string(n), "code.jl"))
-
-
-"""
     read_csv(f_name)
 
 Read a CSV file.

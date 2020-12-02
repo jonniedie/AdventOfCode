@@ -1,6 +1,6 @@
 module Advent2020
 
-using Reexport
+using Reexport: @reexport
 
 include("fileIO.jl")
 @reexport using .FileIO
@@ -8,8 +8,9 @@ include("fileIO.jl")
 include("common.jl")
 @reexport using .Common
 
+
 for i in 1:2
-    FileIO.load_day(i)
+    include(joinpath("..", "scripts", "Day"*string(i), "code.jl"))
 end
 
 end

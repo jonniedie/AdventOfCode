@@ -1,12 +1,11 @@
 module Day2
 
-## Setup
-
 ## Input getting
 # Functions
 function parse_line(str)
     policy, password = split(str, ": ")
     lohi, letter = split(policy, " ")
+    letter = only(letter)
     lo, hi = parse.(Int, split(lohi, "-"))
     return (; lo, hi, letter, password)
 end
@@ -31,10 +30,13 @@ const data = read_input(joinpath(@__DIR__, "input.txt"))
 
 ## Solution functions (change these)
 # Password validators
-validator1(line) = line.lo ≤ count(string(line.letter), line.password) ≤ line.hi
-validator2(line) =
-    string(line.password[line.lo])==line.letter && !(string(line.password[line.hi])==line.letter) ||
-    !(string(line.password[line.lo])==line.letter) && string(line.password[line.hi])==line.letter
+validator1(line) = line.lo ≤ count(c->c==line.letter, line.password) ≤ line.hi
+function validator2(line)
+    lo = line.password[line.lo]
+    hi = line.password[line.hi]
+    letter = line.letter
+    return (lo==letter && !(hi==letter)) || (!(lo==letter) && hi==letter)
+end
 
 # Solution-getting closure
 get_solution_with(password_validator) = data -> sum(password_validator.(data))
