@@ -5,7 +5,7 @@ using Advent2020: read_simple
 
 
 ## Inputs (change these)
-const test_input = [
+const test_input1 = test_input2 = [
     1721
     979
     366
@@ -16,7 +16,7 @@ const test_input = [
 const test_output1 = 514579
 const test_output2 = 241861950
 
-const data = read_simple(joinpath(@__DIR__, "input.txt"))
+const data = read_simple(joinpath(@__DIR__, "input.txt")) |> sort
 
 
 ## Solution functions (change these)
@@ -44,24 +44,6 @@ function get_solution2(data)
             end
         end
     end
-end
-
-
-## Outputs (don't change these)
-function run(; time=true)
-    # Do not pass if tests don't check out
-    @assert get_solution1(test_input) == test_output1
-    @assert get_solution2(test_input) == test_output2
-
-    # Print and time solution 1
-    println("Solution 1: $(get_solution1(data))")
-    time && @time get_solution1(data)
-
-    # Print and time solution 2
-    println("Solution 2: $(get_solution2(data))")
-    time && @time get_solution2(data)
-
-    return nothing
 end
 
 end

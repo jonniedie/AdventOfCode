@@ -1,7 +1,5 @@
 module Advent2020
 
-using DelimitedFiles: readdlm
-using OffsetArrays: OffsetArray
 using Reexport
 
 include("fileIO.jl")

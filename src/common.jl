@@ -1,6 +1,10 @@
 module Common
 
-export zero_based, run
+export zero_based, run_day
+
+using OffsetArrays: OffsetArray
+using Test: @test, @testset
+using UnPack: @unpack
 
 
 """
@@ -10,11 +14,31 @@ Make an array that indexes from 0 instead of 1.
 """
 zero_based(array) = OffsetArray(array, -1)
 
+
 """
-    run(mod)
+    run_day(mod)
 
 Run a module `mod`.
 """
-run(mod) = mod.run()
+run_day(n; time=true) = run_day(eval(Meta.parse("Advent2020.Day$(n)")); time)
+
+function run_day(mod::Module; time=true)
+    @unpack get_solution1, get_solution2, test_input1, test_output1, test_input2, test_output2, data = mod
+    # Do not pass if tests don't check out
+    @testset "Input tests" begin
+        @test get_solution1(test_input1) == test_output1
+        @test get_solution2(test_input2) == test_output2
+    end
+
+    # Print and time solution 1
+    println("Solution 1: $(get_solution1(data))")
+    time && @time get_solution1(data)
+
+    # Print and time solution 2
+    println("Solution 2: $(get_solution2(data))")
+    time && @time get_solution2(data)
+
+    return nothing
+end
 
 end
