@@ -2,12 +2,12 @@ module Day2
 
 ## Setup
 
-## Inputs (change these)
+## Input getting
 # Functions
 function parse_line(str)
-    lohi, letter, password = split(str, " ")
+    policy, password = split(str, ": ")
+    lohi, letter = split(policy, " ")
     lo, hi = parse.(Int, split(lohi, "-"))
-    letter = string(letter[1])
     return (; lo, hi, letter, password)
 end
 

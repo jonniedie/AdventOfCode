@@ -2,6 +2,8 @@ module FileIO
 
 export read_csv, read_simple, read_big
 
+import ..Advent2020
+
 using DelimitedFiles: readdlm
 
 

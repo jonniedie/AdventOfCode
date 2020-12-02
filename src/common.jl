@@ -2,6 +2,8 @@ module Common
 
 export zero_based, run_day
 
+import ..Advent2020
+
 using OffsetArrays: OffsetArray
 using Test: @test, @testset
 using UnPack: @unpack
@@ -16,9 +18,12 @@ zero_based(array) = OffsetArray(array, -1)
 
 
 """
-    run_day(mod)
+    run_day(n; time=true)
+    run_day(mod::Module; time=true)
 
-Run a module `mod`.
+Run day `n`'s puzzle and print outputs. If the `time` flag is set to `true`, it will also
+print the time it took to run the solution. The positional argument can also be a Day module
+directly.
 """
 run_day(n; time=true) = run_day(eval(Meta.parse("Advent2020.Day$(n)")); time)
 
