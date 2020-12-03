@@ -1,40 +1,43 @@
 module Day3
 
-## Setup
-using Advent2020
+export get_inputs, get_solution1, get_solution2
 
-## Inputs (change these)
-to_bool(str) = [char=='#' for char in str]
+## Input getting
+is_tree(char) = char=='#'
+is_tree(str::String) = [is_tree(char) for char in str]
 
-const test_input1 = test_input2 = readlines(joinpath(@__DIR__, "test_input1.txt")) .|> to_bool
+parse_input(f_name) = readlines(joinpath(@__DIR__, f_name)) .|> is_tree
 
-const test_output1 = 7
-const test_output2 = 336
+function get_inputs()
+    test_input1 = test_input2 = parse_input("test_input1.txt")
 
-const data = readlines(joinpath(@__DIR__, "input.txt")) .|> to_bool
+    test_output1 = 7
+    test_output2 = 336
+
+    data = parse_input("input.txt")
+
+    return (; test_input1, test_input2, test_output1, test_output2, data)
+end
 
 
-## Solution functions (change these)
+## Solution functions
 # Part 1
 function get_solution1(data; slope=1//3)
-    idx_lr = 1
-    idx_ud = 1
+    pos_right = 1
+    pos_down = 1
     tree_count = 0
     period = length(data[1])
-    while idx_ud ≤ length(data)
-        line = data[idx_ud]
-        tree_count += line[idx_lr]
-        idx_lr = mod1(idx_lr+slope.den, period)
-        idx_ud += slope.num
+
+    while pos_down ≤ length(data)
+        tree_count += data[pos_down][pos_right]
+        pos_right = mod1(pos_right+slope.den, period)
+        pos_down += slope.num
     end
+
     return tree_count
 end
 
 # Part 2
-function get_solution2(data)
-    slopes = [1//1, 1//3, 1//5, 1//7, 2//1]
-    return prod(get_solution1(data; slope) for slope in slopes)
-end
-
+get_solution2(data) = prod(get_solution1(data; slope) for slope in [1//1, 1//3, 1//5, 1//7, 2//1])
 
 end

@@ -1,10 +1,8 @@
 # Taken from https://github.com/cmcaine/advent2020/blob/main/scripts/get-data.jl
-using HTTP
-
 aoc_cookie = try
     read(joinpath(@__DIR__, "cookie"), String)
 catch
-    println("No cookie provided for the AoC website. Save your cookie in a file called 'cookie' in the /src/download_data folder")
+    println("No cookie provided for the AoC website. Save your cookie in a file called 'cookie' in the /src/EventUtils folder")
     nothing
 end
 

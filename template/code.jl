@@ -1,18 +1,20 @@
 module DayN
 
-## Setup
+export get_inputs, get_solution1, get_solution2
 
 
-## Inputs (change these)
-const test_input1 = nothing
-const test_input2 = nothing
-const test_output1 = nothing
-const test_output2 = nothing
+## Input getting
+function get_inputs()
+    test_input1 = nothing
+    test_input2 = nothing
+    test_output1 = nothing
+    test_output2 = nothing
+    data = readlines(joinpath(@__DIR__, "input.txt"))
+    return (; test_input1, test_input2, test_output1, test_output2, data)
+end
 
-const data = nothing
 
-
-## Solution functions (change these)
+## Solution functions
 # Part 1
 function get_solution1(data)
     return nothing
@@ -22,6 +24,5 @@ end
 function get_solution2(data)
     return nothing
 end
-
 
 end

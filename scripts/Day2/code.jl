@@ -1,5 +1,8 @@
 module Day2
 
+export get_inputs, get_solution1, get_solution2
+
+
 ## Input getting
 # Functions
 function parse_line(str)
@@ -13,19 +16,23 @@ end
 read_input(io) = parse_line.(readlines(io))
 
 # Inputs
-const test_input1 = test_input2 = read_input(
-    IOBuffer(
-        """
-        1-3 a: abcde
-        1-3 b: cdefg
-        2-9 c: ccccccccc
-        """
+function get_inputs()
+    test_input1 = test_input2 = read_input(
+        IOBuffer(
+            """
+            1-3 a: abcde
+            1-3 b: cdefg
+            2-9 c: ccccccccc
+            """
+        )
     )
-)
-const test_output1 = 2
-const test_output2 = 1
+    test_output1 = 2
+    test_output2 = 1
 
-const data = read_input(joinpath(@__DIR__, "input.txt"))
+    data = read_input(joinpath(@__DIR__, "input.txt"))
+
+    return (; test_input1, test_input2, test_output1, test_output2, data)
+end
 
 
 ## Solution functions (change these)

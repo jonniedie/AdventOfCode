@@ -1,22 +1,23 @@
 module Advent2020
 
-
+using Dates: day, today
 using Reexport: @reexport
 
-include("fileIO.jl")
-@reexport using .FileIO
+include("FileIO.jl")
+using .FileIO
 
-include("common.jl")
-@reexport using .Common
+include("Utils.jl")
+using .Utils
 
-include("download_data/download_data.jl")
-export download_input
+include(joinpath("EventUtils", "EventUtils.jl"))
+@reexport using .EventUtils
 
-for i in 1:3
-    try
-        include(joinpath("..", "scripts", "Day"*string(i), "code.jl"))
-    catch
-        println("There is no input file for  $i. Run `download_input($i)` to download the input for day $i")
+for i in 1:day(today())
+    dir = joinpath(@__DIR__, "..", "scripts", "Day"*string(i))
+    if isdir(dir)
+        include(joinpath(dir, "code.jl"))
+    else
+        make_my_day(i)
     end
 end
 

@@ -1,22 +1,30 @@
 module Day1
 
+export get_inputs, get_solution1, get_solution2
+
+
 ## Setup
 using Advent2020: read_simple
 
 
 ## Inputs (change these)
-const test_input1 = test_input2 = [
-    1721
-    979
-    366
-    299
-    675
-    1456
-]
-const test_output1 = 514579
-const test_output2 = 241861950
+function get_inputs()
+    test_input1 = test_input2 = [
+        1721
+        979
+        366
+        299
+        675
+        1456
+    ]
+    test_output1 = 514579
+    test_output2 = 241861950
 
-const data = read_simple(joinpath(@__DIR__, "input.txt")) #|> sort
+    data = read_simple(joinpath(@__DIR__, "input.txt")) #|> sort
+
+    return (; test_input1, test_input2, test_output1, test_output2, data)
+
+end
 
 
 ## Solution functions (change these)
