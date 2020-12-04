@@ -32,10 +32,9 @@ end
 
 parse_passport(str) = split.(split(str), ":") .|> (x->Symbol(x[1])=>x[2])
 
-function read_input(f_name)
-    passports = split(read(f_name, String), "\n\n") .|> parse_passport .|> fill_columns
-    return DataFrame(passports)
-end
+read_input(f_name) = split(read(f_name, String), r"\n\n|\r\n\r\n") .|>
+    parse_passport .|>
+    fill_columns
 
 function get_inputs()
     test_input1 = read_input(joinpath(@__DIR__, "test_input1.txt"))
@@ -51,33 +50,31 @@ end
 # Part 1
 is_valid1(passport) = all(.!ismissing.(getproperty.(Ref(passport), (:byr, :iyr, :eyr, :hgt, :hcl, :ecl, :pid))))
 
-get_solution1(data) = count(is_valid1, eachrow(data))
+get_solution1(data) = count(is_valid1, data)
 
 # Part 2
 function is_valid2(passport)
     @unpack byr, iyr, eyr, hgt, hcl, ecl, pid, cid = passport
 
-    !is_valid1(passport) && return false
-
-    hgt = if contains(hgt, "cm")
-        (num=parse(Int, String(hgt[1:end-2])), unit="cm")
-    elseif contains(hgt, "in")
-        (num=parse(Int, String(hgt[1:end-2])), unit="in")
-    else
-        return false
-    end
-    
     return (
+        is_valid1(passport) &&
         ndigits(byr)==4 && 1920≤byr≤2002 &&
         ndigits(iyr)==4 && 2010≤iyr≤2020 &&
         ndigits(eyr)==4 && 2020≤eyr≤2030 &&
-        ((hgt.unit=="cm" && 150≤hgt.num≤193) || (hgt.unit=="in" && 59≤hgt.num≤76)) &&
-        hcl[1]=='#' && length(hcl)==7 && all((islowercase(x)||isnumeric(x)) && ('0'≤x≤'9' || 'a'≤x≤'f') for x in hcl[2:end]) && 
+        (
+            (contains(hgt, "cm") && 150 ≤ parse(Int, String(hgt[1:end-2])) ≤ 193) ||
+            (contains(hgt, "in") &&  59 ≤ parse(Int, String(hgt[1:end-2])) ≤  76)
+        ) &&
+        (
+            hcl[1]=='#' &&
+            length(hcl)==7 &&
+            all(('0'≤x≤'9' || 'a'≤x≤'f') for x in hcl[2:end])
+        ) && 
         any(ecl .== (:amb, :blu, :brn, :gry, :grn, :hzl, :oth)) &&
         length(pid)==9
     )
 end
 
-get_solution2(data) = count(is_valid2, eachrow(data))
+get_solution2(data) = count(is_valid2, data)
 
 end
