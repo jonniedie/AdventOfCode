@@ -1,8 +1,8 @@
 
 function make_my_day(n=day(today()))
-    dir = joinpath(@__DIR__, "..", "scripts", "Day"*string(n))
+    dir = joinpath("scripts", "Day"*string(n))
     code_file = joinpath(dir, "code.jl")
-    template_file = joinpath(@__DIR__, "..", "template", "code.jl")
+    template_file = joinpath("template", "code.jl")
 
     try
         mkdir(dir)
