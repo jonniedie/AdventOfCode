@@ -9,7 +9,7 @@ using UnPack: @unpack
 maybe_parse(T, x) = x
 maybe_parse(T, str::AbstractString) = parse(T, str)
 
-fill_missing(arr_pair) = fill_missing(; arr_pair...)
+fill_missing(pair_array) = fill_missing(; pair_array...)
 function fill_missing(; byr=missing,
                         iyr=missing,
                         eyr=missing,
@@ -25,9 +25,9 @@ function fill_missing(; byr=missing,
     return (; byr, iyr, eyr, hgt, hcl, ecl, pid, cid)
 end
 
-parse_passport(str) =
-    split.(split(str), ":") .|>
-    (x -> Symbol(x[1])=>x[2]) |>
+parse_passport(str) = split(str) .|>
+    Base.Fix2(split, ":") .|>
+    (x -> Symbol(x[1]) => x[2]) |>
     fill_missing
 
 read_input(f_name) = read(joinpath(@__DIR__, f_name), String) |>
@@ -35,11 +35,11 @@ read_input(f_name) = read(joinpath(@__DIR__, f_name), String) |>
     parse_passport
 
 get_inputs() = (;
-    test_input1 = read_input(joinpath(@__DIR__, "test_input1.txt")),
-    test_input2 = read_input(joinpath(@__DIR__, "test_input2.txt")),
+    test_input1 = read_input("test_input1.txt"),
+    test_input2 = read_input("test_input2.txt"),
     test_output1 = 2,
     test_output2 = 4,
-    data = read_input(joinpath(@__DIR__, "input.txt")),
+    data = read_input("input.txt"),
 )
 
 
