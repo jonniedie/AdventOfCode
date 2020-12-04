@@ -9,8 +9,8 @@ using UnPack: @unpack
 maybe_parse(T, x) = x
 maybe_parse(T, str::AbstractString) = parse(T, str)
 
-fill_columns(arr_pair) = fill_columns(; arr_pair...)
-function fill_columns(; byr=missing,
+fill_missing(arr_pair) = fill_missing(; arr_pair...)
+function fill_missing(; byr=missing,
                         iyr=missing,
                         eyr=missing,
                         hgt=missing,
@@ -25,11 +25,14 @@ function fill_columns(; byr=missing,
     return (; byr, iyr, eyr, hgt, hcl, ecl, pid, cid)
 end
 
-parse_passport(str) = split.(split(str), ":") .|> (x->Symbol(x[1])=>x[2])
+parse_passport(str) =
+    split.(split(str), ":") .|>
+    (x -> Symbol(x[1])=>x[2]) |>
+    fill_missing
 
-read_input(f_name) = split(read(f_name, String), r"\n\n|\r\n\r\n") .|>
-    parse_passport .|>
-    fill_columns
+read_input(f_name) = read(joinpath(@__DIR__, f_name), String) |>
+    Base.Fix2(split, r"\n\n|\r\n\r\n") .|>
+    parse_passport
 
 get_inputs() = (;
     test_input1 = read_input(joinpath(@__DIR__, "test_input1.txt")),
