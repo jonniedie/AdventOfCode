@@ -5,7 +5,7 @@ using ..Advent2020.Utils: zero_based
 
 ## Input getting
 function get_inputs()
-    test_input1 = test_input2 = [
+    test_input1 = [
         "FBFBBFFRLR"
         "BFFFBBFRRR"
         "FFFBBBFRRR"
