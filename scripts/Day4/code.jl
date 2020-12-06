@@ -67,7 +67,7 @@ function is_valid2(passport)
             length(hcl)==7 &&
             all(('0'≤x≤'9' || 'a'≤x≤'f') for x in hcl[2:end])
         ) && 
-        any(ecl .== (:amb, :blu, :brn, :gry, :grn, :hzl, :oth)) &&
+        ecl in (:amb, :blu, :brn, :gry, :grn, :hzl, :oth) &&
         length(pid)==9
     )
 end
