@@ -18,9 +18,9 @@ function get_inputs()
 end
 
 # Statement type for easy parsing of rules
-@concrete terse struct Statement
-    num
-    desc
+struct Statement
+    num::Int
+    desc::String
 end
 
 const NO_OTHER = Statement(0, "no other")
@@ -71,8 +71,7 @@ get_solution1(rules; bag="shiny gold") = sum(contains_bag(rules, head, bag) for 
     if statements[1]==NO_OTHER
         return 0
     else
-        top_level = sum(num_bags.(statements))
-        return top_level + sum(num_bags(st) * count_bags(rules, description(st)) for st in statements)
+        return sum(num_bags(s) * (1 + count_bags(rules, description(s))) for s in statements)
     end
 end
 
