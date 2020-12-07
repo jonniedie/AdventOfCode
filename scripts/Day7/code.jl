@@ -35,7 +35,7 @@ num_bags(statement) = statement.num
 description(statement) = statement.desc
 
 
-## Helper structs and functions
+## Helper functions
 # Parse a single line of the rules
 function parse_rule(line)
     line = split(line, r" bags contain | bag contains |, | bags| bag", keepempty=false)
