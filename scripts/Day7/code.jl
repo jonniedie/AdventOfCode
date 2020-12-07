@@ -29,8 +29,9 @@ function Statement(str)
     if str=="no other"
         return NO_OTHER
     else
-        words = split(str, " ")
-        return Statement(parse(Int, words[1]), join(words[2:end], " "))
+        num, desc = split(str, " ", limit=2)
+        num = parse(Int, num)
+        return Statement(num, desc)
     end
 end
 
@@ -41,8 +42,9 @@ description(statement) = statement.desc
 ## Helper functions
 # Parse a single line of the rules
 function parse_rule(line)
-    line = split(line, r" bags contain | bag contains |, | bags| bag", keepempty=false)
-    return String(line[1]) => Statement.(line[2:end-1])
+    head, body = split(line, r" bags contain ")
+    body = split(body, r" (bag|bags)(, |\.)", keepempty=false)
+    return String(head) => Statement.(body)
 end
 
 # Make the rule dict

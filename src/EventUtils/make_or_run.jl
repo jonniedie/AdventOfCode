@@ -15,7 +15,7 @@ function make_my_day(n=day(today()))
     !isfile(code_file) && open(template_file, read=true, write=true) do f
         for (line_num, line) in enumerate(eachline(f, keep=true))
             if line_num==1
-                write(tmp_f, "module Day"*string(n))
+                write(tmp_f, "module Day"*string(n)*"\n")
             else
                 write(tmp_f, line)
             end
