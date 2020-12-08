@@ -4,15 +4,13 @@ using Dates: day, today
 using Reexport: @reexport
 
 include("FileIO.jl")
-using .FileIO
-
 include("Utils.jl")
-using .Utils
-
+include("Machines.jl")
 include(joinpath("EventUtils", "EventUtils.jl"))
+
 @reexport using .EventUtils
 
-for i in 1:7
+for i in 1:8
     dir = joinpath(@__DIR__, "..", "scripts", "Day"*string(i))
     if isdir(dir)
         include(joinpath(dir, "code.jl"))

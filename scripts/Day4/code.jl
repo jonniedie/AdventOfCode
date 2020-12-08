@@ -59,8 +59,8 @@ function is_valid2(passport)
         ndigits(iyr)==4 && 2010≤iyr≤2020 &&
         ndigits(eyr)==4 && 2020≤eyr≤2030 &&
         (
-            (contains(hgt, "cm") && 150 ≤ parse(Int, String(hgt[1:end-2])) ≤ 193) ||
-            (contains(hgt, "in") &&  59 ≤ parse(Int, String(hgt[1:end-2])) ≤  76)
+            (contains(hgt, "cm") && 150 ≤ parse(Int, hgt[1:end-2]) ≤ 193) ||
+            (contains(hgt, "in") &&  59 ≤ parse(Int, hgt[1:end-2]) ≤  76)
         ) &&
         (
             hcl[1]=='#' &&

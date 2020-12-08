@@ -4,7 +4,7 @@ export get_inputs, get_solution1, get_solution2
 
 
 ## Setup
-using Advent2020: read_simple
+using ..FileIO: read_simple
 
 
 ## Inputs (change these)
