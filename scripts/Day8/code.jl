@@ -57,12 +57,3 @@ end
 get_solution2(tape) = run_until_valid(tape)[1].accumulator
 
 end
-
-#=
-Test Summary: | Pass  Total
-Input tests   |    2      2
-Solution 1: 2051
-  0.000032 seconds (10 allocations: 4.328 KiB)
-Solution 2: 2304
-  0.003705 seconds (2.88 k allocations: 1.332 MiB)
-=#
