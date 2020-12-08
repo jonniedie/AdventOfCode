@@ -7,7 +7,17 @@ using ..Machines: read_instructions, run_tape, Machine
 
 ## Input getting
 function get_inputs()
-    test_input1 = test_input2 = read_instructions(joinpath(@__DIR__, "test_input1.txt"))
+    test_input1 = test_input2 = read_instructions(IOBuffer("""
+        nop +0
+        acc +1
+        jmp +4
+        acc +3
+        jmp -3
+        acc -99
+        acc +1
+        jmp -4
+        acc +6
+    """))
     test_output1 = 5
     test_output2 = 8
     data = read_instructions(joinpath(@__DIR__, "input.txt"))
@@ -47,3 +57,12 @@ end
 get_solution2(tape) = run_until_valid(tape)[1].accumulator
 
 end
+
+#=
+Test Summary: | Pass  Total
+Input tests   |    2      2
+Solution 1: 2051
+  0.000032 seconds (10 allocations: 4.328 KiB)
+Solution 2: 2304
+  0.003705 seconds (2.88 k allocations: 1.332 MiB)
+=#
