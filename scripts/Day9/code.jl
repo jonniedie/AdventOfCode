@@ -25,13 +25,11 @@ end
 
 # Part 1
 function get_solution1((data, preamble_length))
-    i = 1
-    while true
+    for i in eachindex(data)
         j = i + preamble_length
         preamble = @view data[i:j-1]
         val = data[j]
         !is_valid(val, preamble) && return val
-        i += 1
     end
     return nothing
 end
@@ -39,8 +37,7 @@ end
 # Part 2
 function get_solution2((data, preamble_length))
     sol1 = get_solution1((data, preamble_length))
-    i = 1
-    while true
+    for i in eachindex(data)
         val = 0
         for j in i:length(data)
             val += data[j]
@@ -51,7 +48,6 @@ function get_solution2((data, preamble_length))
                 break
             end
         end
-        i += 1
     end
     return nothing
 end
