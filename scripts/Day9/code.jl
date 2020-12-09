@@ -4,19 +4,21 @@ export get_inputs, get_solution1, get_solution2
 
 
 ## Input getting
+read_input(f_name) = parse.(Int, readlines(joinpath(@__DIR__, f_name)))
+
 function get_inputs()
-    test_input1 = test_input2 = (parse.(Int, readlines(joinpath(@__DIR__, "test_input1.txt"))), 5)
+    test_input1 = test_input2 = (read_input("test_input1.txt"), 5)
     test_output1 = 127
     test_output2 = 62
-    data = (parse.(Int, readlines(joinpath(@__DIR__, "input.txt"))), 25)
+    data = (read_input("input.txt"), 25)
     return (; test_input1, test_output1, test_input2, test_output2, data)
 end
 
 
 ## Solution functions
 function is_valid(number, preamble)
-    for i in preamble, j in preamble
-        i+j==number && return true
+    for i in eachindex(preamble), j in i:length(preamble)
+        preamble[i] + preamble[j] == number && return true
     end
     return false
 end
@@ -44,7 +46,7 @@ function get_solution2((data, preamble_length))
             val += data[j]
             if val==sol1
                 this_range = @view data[i:j]
-                return minimum(this_range) + maximum(this_range)
+                return sum(extrema(this_range))
             elseif val > sol1
                 break
             end
