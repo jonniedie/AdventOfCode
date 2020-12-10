@@ -5,7 +5,7 @@ export get_inputs, get_solution1, get_solution2
 ## Input getting
 function read_input(f_name)
     sorted = sort(parse.(Int, readlines(joinpath(@__DIR__, f_name))))
-    return push!(pushfirst!(sorted, 0), sorted[end]+3)
+    return join(string.(diff([0; sorted; sorted[end]+3])))
 end
 
 function get_inputs()
@@ -20,23 +20,12 @@ end
 ## Solution functions
 # Part 1
 get_solution1(data::Tuple) = get_solution1.(data)
-function get_solution1(data)
-    diffed = diff(data)
-    return count(==(1), diffed) * count(==(3), diffed)
-end
+get_solution1(data) = count(==('1'), data) * count(==('3'), data)
 
 # Part 2
 # Geez. This took me so long to figure out.
+# Since diffs are either 1 or 3, we can count the length of each run of 1-diffs by splitting by the number 3
 get_solution2(data::Tuple) = get_solution2.(data)
-function get_solution2(data)
-    diffed = diff(data)
-
-    # Since diffs are either 1 or 3, we can count the length of each run of 1-diffs by splitting by the number 3
-    ones_runs = filter(>(1), length.(split(join(string.(diffed)), '3', keepempty=false)))
-
-
-    # Geez. This took me so long to figure out.
-    return prod(binomial.(ones_runs, 2) .+ 1)
-end
+get_solution2(data) = prod(binomial.(length.(split(data, '3', keepempty=false)), 2) .+ 1)
 
 end
