@@ -10,7 +10,7 @@ include(joinpath("EventUtils", "EventUtils.jl"))
 
 @reexport using .EventUtils
 
-for i in 1:9
+for i in 1:10
     dir = joinpath(@__DIR__, "..", "scripts", "Day"*string(i))
     if isdir(dir)
         include(joinpath(dir, "code.jl"))
