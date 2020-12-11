@@ -31,11 +31,12 @@ function pad_matrix(M, default='.')
     return P
 end
 
-const adj_inds = ((i, j) for i in -1:1, j in -1:1 if (i!=0 || j!=0))
+const adj_inds = [(i, j) for i in -1:1, j in -1:1 if (i!=0 || j!=0)]
 
 get_adjacent(data, ci_tuple, sz) = (data[(adj_ij .+ ci_tuple)...] for adj_ij in adj_inds)
 
-get_seen(data, ci_tuple, sz) = map(adj_inds) do dir
+get_seen(data, ci_tuple, sz) = ntuple(8) do i
+    dir = adj_inds[i]
     idx = ci_tuple
     elem = '.'
     while all(idx .∈ sz) && elem=='.'

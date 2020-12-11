@@ -29,7 +29,7 @@ end
 # Part 1
 infinite_loop(machine) = machine.current_line in machine.lines_visited
 
-get_solution1(tape) = run_tape(tape, halt_condition=infinitely_looping)[1].accumulator
+get_solution1(tape) = run_tape(tape, Machine(track=true); halt_condition=infinite_loop)[1].accumulator
 
 
 # Part 2
@@ -48,7 +48,9 @@ function run_until_valid(tape)
         machine, halted = run_tape(new_tape, Machine(track=true); halt_condition=infinite_loop)
         new_tape[i] = tape[i]
 
-        if !halted return machine, i end
+        if !halted
+            return machine, i
+        end
     end
 
     return Machine(), -1

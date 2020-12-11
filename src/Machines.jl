@@ -90,7 +90,9 @@ machine is supplied. A halt condition can also be given with the `halt_condition
 """
 function run_tape(tape, machine=Machine(track=false); halt_condition=x->false)
     while machine.current_line<length(tape)
-        if halt_condition(machine) return machine, true end
+        if halt_condition(machine)
+            return machine, true
+        end
 
         f, args = tape[machine.current_line]
         if f == :acc
