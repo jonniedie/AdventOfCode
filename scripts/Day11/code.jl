@@ -45,33 +45,33 @@ get_seen(data, ci_tuple, sz) = map(adj_inds) do dir
     elem
 end
 
-function update_seats!(data, new_data=copy(data), see_func=get_adjacent, occ_tolerance=4)
-    new_data .= data
+function update_seats!(data, temp=copy(data), see_func=get_adjacent, occ_tolerance=4)
+    temp .= data
     sz = ntuple(n -> 1:lastindex(data, n)-1, 2)
     for ci in CartesianIndices(sz)
         ci_tuple = Tuple(ci)
         seen = see_func(data, ci_tuple, sz)
         if data[ci] == 'L'
             if !any(seen .== '#')
-                new_data[ci] = '#'
+                temp[ci] = '#'
             end
         elseif data[ci] == '#'
             if count(seen .== '#') >= occ_tolerance
-                new_data[ci] = 'L'
+                temp[ci] = 'L'
             end
         end
     end
-    data .= new_data
+    data .= temp
     return data
 end
 
 function get_solution(data, see_func=get_adjacent, occ_tolerance=4)
     data = copy(data)
-    new_data = update_seats!(copy(data), copy(data), see_func, occ_tolerance)
-    newer_data = similar(new_data)
+    temp = similar(data)
+    new_data = update_seats!(copy(data), temp, see_func, occ_tolerance)
     while new_data != data
         data .= new_data
-        update_seats!(new_data, newer_data, see_func, occ_tolerance)
+        update_seats!(new_data, temp, see_func, occ_tolerance)
     end
     return count(new_data .== '#')
 end
