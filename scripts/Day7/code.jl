@@ -64,7 +64,7 @@ make_the_rules(lines) = Dict(parse_rule.(lines))
     end
 end
 
-get_solution1(rules; bag="shiny gold") = sum(contains_bag(rules, head, bag) for head in keys(rules))
+get_solution1(rules; bag="shiny gold") = count(contains_bag(rules, head, bag) for head in keys(rules))
 
 
 # Part 2
@@ -78,5 +78,24 @@ get_solution1(rules; bag="shiny gold") = sum(contains_bag(rules, head, bag) for 
 end
 
 get_solution2(rules; bag="shiny gold") = count_bags(rules, bag)
+
+
+## Bonus
+# Pretty print bag structure
+function show_bag(rules, bag="shiny gold", pre="", first=true)
+    first && println(bag)
+    statements = rules[bag]
+    # statements = sort(rules[bag], by=x->count_bags(rules, x.desc), rev=true)
+    if statements[1] == NO_OTHER
+        return nothing
+    end
+    for i in 1:length(statements)-1
+        statement = statements[i]
+        println(pre * " ├╴ $(statement.desc) × $(statement.num)")
+        show_bag(rules, statement.desc, pre * " │  ", false)
+    end
+    println(pre * " ╰╴ $(statements[end].desc) × $(statements[end].num)")
+    show_bag(rules, statements[end].desc, pre * "    ", false)
+end
 
 end

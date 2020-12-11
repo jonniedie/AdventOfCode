@@ -27,7 +27,7 @@ end
 
 ## Solution functions
 # Part 1
-infinitely_looping(machine) = machine.current_line in machine.lines_visited
+infinite_loop(machine) = machine.current_line in machine.lines_visited
 
 get_solution1(tape) = run_tape(tape, halt_condition=infinitely_looping)[1].accumulator
 
@@ -45,13 +45,13 @@ function run_until_valid(tape)
             new_tape[i] = (:nop, args)
         end
 
-        machine, halted = run_tape(new_tape, halt_condition=infinitely_looping)
+        machine, halted = run_tape(new_tape, Machine(track=true); halt_condition=infinite_loop)
         new_tape[i] = tape[i]
 
-        !halted && return machine, i
+        if !halted return machine, i end
     end
 
-    return Machine(), -99
+    return Machine(), -1
 end
 
 get_solution2(tape) = run_until_valid(tape)[1].accumulator

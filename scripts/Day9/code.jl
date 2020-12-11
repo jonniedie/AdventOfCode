@@ -18,7 +18,7 @@ end
 ## Solution functions
 function is_valid(number, preamble)
     for i in eachindex(preamble), j in i:length(preamble)
-        preamble[i] + preamble[j] == number && return true
+        if preamble[i] + preamble[j] == number return true end
     end
     return false
 end
@@ -29,9 +29,9 @@ function get_solution1((data, preamble_length))
         j = i + preamble_length
         preamble = @view data[i:j-1]
         val = data[j]
-        !is_valid(val, preamble) && return val
+        if !is_valid(val, preamble) return val end
     end
-    return nothing
+    return -1
 end
 
 # Part 2
@@ -49,7 +49,7 @@ function get_solution2((data, preamble_length))
             end
         end
     end
-    return nothing
+    return -1
 end
 
 end

@@ -71,13 +71,13 @@ end
 function jmp!(machine, val)
     machine.track && push!(machine.lines_visited, machine.current_line)
     machine.current_line += val
-    return nothing
+    return -1
 end
 
 # No op (do nothing)
 function nop!(machine, val)
     jmp!(machine, 1)
-    return nothing
+    return -1
 end
 
 
@@ -88,9 +88,9 @@ end
 Run instruction tape. Will create a new machine with instruction tracking turned on if no
 machine is supplied. A halt condition can also be given with the `halt_condition` keyword.
 """
-function run_tape(tape, machine=Machine(track=true); halt_condition=x->false)
+function run_tape(tape, machine=Machine(track=false); halt_condition=x->false)
     while machine.current_line<length(tape)
-        halt_condition(machine) && return machine, true
+        if halt_condition(machine) return machine, true end
 
         f, args = tape[machine.current_line]
         if f == :acc
