@@ -48,7 +48,7 @@ end
 function update_seats!(data, temp=copy(data), see_func=get_adjacent, occ_tolerance=4)
     temp .= data
     sz = ntuple(n -> 1:lastindex(data, n)-1, 2)
-    for ci in CartesianIndices(sz)
+    @inbounds for ci in CartesianIndices(sz)
         ci_tuple = Tuple(ci)
         seen = see_func(data, ci_tuple, sz)
         occupied = (x == '#' for x in seen)
