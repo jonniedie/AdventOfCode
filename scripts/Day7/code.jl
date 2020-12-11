@@ -2,7 +2,7 @@ module Day7
 
 export get_inputs, get_solution1, get_solution2
 
-using ConcreteStructs, Memoize
+using Memoize
 
 
 ## Input getting

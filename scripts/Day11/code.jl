@@ -33,14 +33,13 @@ end
 
 const adj_inds = [(i, j) for i in -1:1, j in -1:1 if (i!=0 || j!=0)]
 
-get_adjacent(data, ci_tuple, sz) = (data[(adj_ij .+ ci_tuple)...] for adj_ij in adj_inds)
+get_adjacent(data, ci_tuple, sz) = (data[(ij .+ ci_tuple)...] for ij in adj_inds)
 
-get_seen(data, ci_tuple, sz) = ntuple(8) do i
-    dir = adj_inds[i]
+get_seen(data, ci_tuple, sz) = Base.Generator(adj_inds) do direction
     idx = ci_tuple
     elem = '.'
     while all(idx .∈ sz) && elem=='.'
-        idx = idx .+ dir
+        idx = idx .+ direction
         elem = data[idx...]
     end
     elem
@@ -52,12 +51,13 @@ function update_seats!(data, temp=copy(data), see_func=get_adjacent, occ_toleran
     for ci in CartesianIndices(sz)
         ci_tuple = Tuple(ci)
         seen = see_func(data, ci_tuple, sz)
+        occupied = (x == '#' for x in seen)
         if data[ci] == 'L'
-            if !any(seen .== '#')
+            if !any(occupied)
                 temp[ci] = '#'
             end
         elseif data[ci] == '#'
-            if count(seen .== '#') >= occ_tolerance
+            if count(occupied) >= occ_tolerance
                 temp[ci] = 'L'
             end
         end
@@ -74,7 +74,7 @@ function get_solution(data, see_func=get_adjacent, occ_tolerance=4)
         data .= new_data
         update_seats!(new_data, temp, see_func, occ_tolerance)
     end
-    return count(new_data .== '#')
+    return count(x == '#' for x in new_data)
 end
 
 
