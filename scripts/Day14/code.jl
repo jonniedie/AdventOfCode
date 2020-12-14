@@ -76,9 +76,7 @@ function get_solution2(data)
     memory = initialize_memory(data)
 
     for line in data
-        mask = replace(line.mask, 'X'=>'C')
-        mask = replace(mask, '0'=>'X')
-        mask = zero_based(collect(mask))
+        mask = zero_based(replace(collect(line.mask), 'X'=>'C', '0'=>'X'))
         C_positions = first.(findall(==('C'), mask))
         max_size = length(C_positions)
         
