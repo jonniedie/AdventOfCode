@@ -49,29 +49,20 @@ end
 
 
 ## Solution functions
-function short_bitstring(n)
-    bs = bitstring(n)
-    return chop(bs, head=length(findfirst(r"0*", bs)), tail=0)
-end
-
 initialize_memory(data) = spzeros(Int, typemax(Int))
 
-mask_replace(value, mask, x='0') = parse(Int, replace(mask, 'X'=>x), base=2)
+mask_replace(mask, x='0') = parse(Int, replace(mask, 'X'=>x), base=2)
 
-overwrite!(memory, pair, mask) = (memory[first(pair)] = apply_mask(last(pair), mask))
+apply_mask(value, mask) = (value | mask_replace(mask, '0')) & mask_replace(mask, '1')
 
-overwrite_chunk!(memory, chunk) = foreach(pair -> overwrite!(memory, pair, chunk.mask), chunk.mem)
 
 # Part 1
-function apply_mask(value, mask)
-    ones_mask = parse(Int, replace(mask, 'X'=>'0'), base=2)
-    zeros_mask = parse(Int, replace(mask, 'X'=>'1'), base=2)
-    return (value | ones_mask) & zeros_mask
-end
-
 function get_solution1(data)
     memory = initialize_memory(data)
-    foreach(chunk -> overwrite_chunk!(memory, chunk), data)
+    for chunk in data, pair in chunk.mem
+        address, value = pair
+        memory[address] = apply_mask(value, chunk.mask)
+    end
     return sum(memory)
 end
 
@@ -87,7 +78,10 @@ function get_solution2(data)
         for short_mask in 0:(2^max_size-1)
             short_mask = bitstring(short_mask)[(end-max_size+1):end]
             mask[C_positions] = zero_based(collect(short_mask))
-            foreach(pair -> memory[apply_mask(first(pair), String(mask))] = last(pair), line.mem)
+            for pair in line.mem
+                idx = apply_mask(first(pair), String(mask))
+                memory[idx] = last(pair)
+            end
         end
     end
     return sum(memory)
