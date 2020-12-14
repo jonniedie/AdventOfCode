@@ -5,6 +5,7 @@ export get_inputs, get_solution1, get_solution2
 using ..Advent2020.Utils
 using SparseArrays
 
+
 ## Input getting
 function get_inputs()
     test_input1 = read_input(IOBuffer(
@@ -26,6 +27,7 @@ function get_inputs()
     ))
     test_output2 = 208
     data = read_input(joinpath(@__DIR__, "input.txt"))
+
     return (; test_input1, test_input2, test_output1, test_output2, data)
 end
 
@@ -59,31 +61,40 @@ apply_mask(value, mask) = (value | mask_replace(mask, '0')) & mask_replace(mask,
 # Part 1
 function get_solution1(data)
     memory = initialize_memory(data)
+
     for chunk in data, pair in chunk.mem
         address, value = pair
         memory[address] = apply_mask(value, chunk.mask)
     end
+
     return sum(memory)
 end
+
 
 # Part 2
 function get_solution2(data)
     memory = initialize_memory(data)
+
     for line in data
         mask = replace(line.mask, 'X'=>'C')
         mask = replace(mask, '0'=>'X')
-        C_positions = first.(findall("C", mask)) .- 1
-        max_size = length(first.(findall("C", reverse(mask))))
         mask = zero_based(collect(mask))
+        C_positions = first.(findall(==('C'), mask))
+        max_size = length(C_positions)
+        
         for short_mask in 0:(2^max_size-1)
             short_mask = bitstring(short_mask)[(end-max_size+1):end]
             mask[C_positions] = zero_based(collect(short_mask))
+            mask_string = String(mask)
+
             for pair in line.mem
-                idx = apply_mask(first(pair), String(mask))
-                memory[idx] = last(pair)
+                encoded_address, value = pair
+                address = apply_mask(encoded_address, mask_string)
+                memory[address] = value
             end
         end
     end
+
     return sum(memory)
 end
 
