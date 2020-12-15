@@ -34,6 +34,7 @@ function get_solution1(data)
     return times[i] * ids[i]
 end
 
+
 # Part 2
 function parse_input2(input)
     ids = Int[]
@@ -47,29 +48,28 @@ function parse_input2(input)
     return ids .=> offsets
 end
 
-function blah(t, id1, id2, offset)
-    id1 % id2 == 0 && return t
-    next = (((t ÷ id2) + 1) * id2)
-    niters = 0
-    while next - t != offset
-        t += id1
-        next = (((t ÷ id2) + 1) * id2)
-        # niters += 1
-        # niters > 1000000000 && error("ahhhh! t = $t, id1 = $id1, id2 = $id2")
+function blah2(t0, step, id, offset)
+    offset -= (offset ÷ id) * id
+    t = t0
+    counter = (t0 ÷ id) + 1
+    delta = counter * id - t0
+    delta_step = step % id
+    while delta != offset
+        delta = mod(delta - delta_step, id)
+        t += step
     end
     return t
 end
 
+
 function get_solution2(data)
     input = data[2]
     outs = parse_input2(input)
-    println(outs)
     t = 0
     id1, _ = outs[1]
     for i in 2:length(outs)
         id, offset = outs[i]
-        println("$t, $id1, $id, $offset")
-        t = blah(t, id1, id, offset)
+        t = blah2(t, id1, id, offset)
         id1 = lcm(id1, id)
     end
     return t

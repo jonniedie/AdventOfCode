@@ -62,8 +62,7 @@ apply_mask(value, mask) = (value | mask_replace(mask, '0')) & mask_replace(mask,
 function get_solution1(data)
     memory = initialize_memory(data)
 
-    for chunk in data, pair in chunk.mem
-        address, value = pair
+    for chunk in data, (address, value) in chunk.mem
         memory[address] = apply_mask(value, chunk.mask)
     end
 
@@ -77,16 +76,15 @@ function get_solution2(data)
 
     for line in data
         mask = zero_based(replace(collect(line.mask), 'X'=>'C', '0'=>'X'))
-        C_positions = first.(findall(==('C'), mask))
-        max_size = length(C_positions)
+        C_positions = findall(==('C'), mask)
+        num_C = length(C_positions)
         
-        for short_mask in 0:(2^max_size-1)
-            short_mask = bitstring(short_mask)[(end-max_size+1):end]
+        for short_mask in 0:(2^num_C-1)
+            short_mask = last(bitstring(short_mask), num_C)
             mask[C_positions] = zero_based(collect(short_mask))
             mask_string = String(mask)
 
-            for pair in line.mem
-                encoded_address, value = pair
+            for (encoded_address, value) in line.mem
                 address = apply_mask(encoded_address, mask_string)
                 memory[address] = value
             end
