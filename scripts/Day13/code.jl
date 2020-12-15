@@ -48,7 +48,7 @@ function parse_input2(input)
     return ids .=> offsets
 end
 
-function blah2(t0, step, id, offset)
+function get_start_time(t0, step, id, offset)
     offset -= (offset ÷ id) * id
     t = t0
     counter = (t0 ÷ id) + 1
@@ -69,7 +69,7 @@ function get_solution2(data)
     id1, _ = outs[1]
     for i in 2:length(outs)
         id, offset = outs[i]
-        t = blah2(t, id1, id, offset)
+        t = get_start_time(t, id1, id, offset)
         id1 = lcm(id1, id)
     end
     return t
