@@ -20,7 +20,6 @@ read_csv(io) = parse.(Int, split(read(io, String), r",|\n|\r\n"; keepempty=false
 function get_solution1(data, n=2020)
     called_nums = Dict(num => turn for (turn, num) in enumerate(data))
     last_num = last(data)
-    num = 0
 
     for i in (length(data)+1):n
         num = haskey(called_nums, last_num) ? i-1 - called_nums[last_num] : 0
@@ -28,7 +27,7 @@ function get_solution1(data, n=2020)
         last_num = num
     end
     
-    return num
+    return last_num
 end
 
 # Part 2
