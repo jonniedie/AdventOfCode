@@ -68,21 +68,20 @@ get_solution2(input::Tuple) = get_solution2(input...)
 
 function get_solution2(data, word="departure")
     @unpack rules, my_ticket, nearby_tickets = data
+
     valid_tickets = [ticket for ticket in nearby_tickets if is_valid_under(ticket, rules)]
     pushfirst!(valid_tickets, my_ticket)
 
-    valids = [
-        is_valid_under(ticket[i], rule)
-        for rule in rules,
-            i in eachindex(my_ticket),
-            ticket in valid_tickets
+    valid_matrix = [
+        all(is_valid_under(ticket[i], rule) for ticket in valid_tickets)
+        for rule in rules, i in eachindex(my_ticket)
     ]
-    valid_matrix = drop_apply(all, valids, dims=3)
-    for i in (sortperm(drop_apply(count, valid_matrix, dims=1)))
-        j = findfirst(valid_matrix[:,i])
-        valid_matrix[j, Not(i)] .= false
+    for i in sortperm(drop_apply(count, valid_matrix, dims=1))
+        i_r = findfirst(valid_matrix[:,i])
+        valid_matrix[i_r, Not(i)] .= false
     end
     rule_indices = findfirst.(eachcol(valid_matrix))
+
     return  prod(my_ticket[i] for (i, i_r) in enumerate(rule_indices) if occursin(word, rules[i_r].field))
 end
 
