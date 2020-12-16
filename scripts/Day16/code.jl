@@ -3,6 +3,7 @@ module Day16
 export get_inputs, get_solution1, get_solution2
 
 using UnPack: @unpack
+using InvertedIndices: Not
 
 
 ## Struct definitions
@@ -22,7 +23,7 @@ end
 function get_inputs()
     test_input1 = read_input("test_input1.txt")
     test_output1 = 71
-    test_input2 = read_input("test_input2.txt")
+    test_input2 = (read_input("test_input2.txt"), "")
     test_output2 = 12 * 11 * 13
     data = read_input("input.txt")
     return (; test_input1, test_input2, test_output1, test_output2, data)
@@ -47,6 +48,8 @@ parse_ticket(str) = parse.(Int, split(str, ','))
 is_valid_under(number, rule) = any(number .∈ rule.ranges)
 is_valid_under(ticket::AbstractArray, rules) = all(any(is_valid_under.(number, rules)) for number in ticket)
 
+drop_apply(f, x; dims) = dropdims(f(x; dims); dims)
+
 
 # Part 1
 function get_solution1(data)
@@ -61,24 +64,27 @@ function get_solution1(data)
 end
 
 # Part 2
-function get_solution2(data)
+get_solution2(input::Tuple) = get_solution2(input...)
+
+function get_solution2(data, word="departure")
     @unpack rules, my_ticket, nearby_tickets = data
     valid_tickets = [ticket for ticket in nearby_tickets if is_valid_under(ticket, rules)]
     pushfirst!(valid_tickets, my_ticket)
-    accum = 1
-    for rule in rules
-        for i in eachindex(my_ticket)
-            if all(is_valid_under(ticket[i], rule) for ticket in valid_tickets)
-                # if occursin("departure", rule.field)
-                #     accum *= my_ticket[i]
-                # end
-                accum *= my_ticket[i]
-                break
-            end
-        end
-    end
 
-    return accum
+    valids = [
+        is_valid_under(ticket[i], rule)
+        for rule in rules,
+            i in eachindex(my_ticket),
+            ticket in valid_tickets
+    ]
+    valid_matrix = drop_apply(all, valids, dims=3)
+    for i in (sortperm(drop_apply(count, valid_matrix, dims=1)))
+        j = findfirst(valid_matrix[:,i])
+        valid_matrix[j, Not(i)] .= false
+    end
+    rule_indices = findfirst.(eachcol(valid_matrix))
+    return  prod(my_ticket[i] for (i, i_r) in enumerate(rule_indices) if occursin(word, rules[i_r].field))
 end
+
 
 end
