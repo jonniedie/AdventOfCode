@@ -55,12 +55,13 @@ drop_apply(f, x; dims) = dropdims(f(x; dims); dims)
 function get_solution1(data)
     @unpack rules, nearby_tickets = data
     invalids = Int[]
+    sum_invalids = 0
     for ticket in nearby_tickets, number in ticket
         if !any(is_valid_under.(number, rules))
-            push!(invalids, number)
+            sum_invalids += number
         end
     end
-    return sum(invalids)
+    return sum_invalids
 end
 
 # Part 2
