@@ -10,12 +10,12 @@ using InvertedIndices: Not
 # Ticket rule
 struct Rule
     field::String
-    ranges::Tuple{UnitRange, UnitRange}
+    ranges::Vector{UnitRange}
 end
 function Rule(str)
     field, ranges = split(str, ':')
     ranges = parse_range.(split(ranges, " or "))
-    return Rule(field, ntuple(i->ranges[i], 2))
+    return Rule(field, ranges)
 end
 
 
