@@ -31,7 +31,7 @@ end
 # Allocate an OffsetArray for the space the active cells will grow into
 function make_space(active_matrix, dims=3, steps=6)
     init_dim_size = (axes(active_matrix)..., ntuple(d->0, dims-2)...)
-    dim_size = reduce((dims, _) -> grow(dims), 1:steps+1, init=init_dim_size)
+    dim_size = grow(init_dim_size, steps+1)
 
     # This will make an OffsetArray with indices that reach back into the negatives
     space = zeros(Bool, dim_size...)
@@ -65,7 +65,7 @@ function step!(space, temp, bounding_box)
 end
 
 # Grow a bounding box of array axes
-grow(box) = map(range -> first(range)-1:last(range)+1, box)
+grow(box, n=1) = map(range -> first(range)-n:last(range)+n, box)
 
 
 # Part 1
