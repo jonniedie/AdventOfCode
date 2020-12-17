@@ -69,8 +69,8 @@ grow(box) = map(range -> first(range)-1:last(range)+1, box)
 
 
 # Part 1
-function get_solution1(data, dims=3)
-    space = make_space(data, dims)
+function get_solution1(data, dims=3, steps=6)
+    space = make_space(data, dims, steps)
     temp = copy(space)
     bounding_box = grow((axes(data)..., ntuple(d->0, dims-2)...))
     for _ in 1:6
