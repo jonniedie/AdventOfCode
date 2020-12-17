@@ -47,6 +47,7 @@ parse_ticket(str) = parse.(Int, split(str, ','))
 ## Solution functions
 is_valid_under(number, rule) = any(number .∈ rule.ranges)
 is_valid_under(ticket::AbstractArray, rules) = all(any(is_valid_under.(number, rules)) for number in ticket)
+is_valid_under(rules) = x -> is_valid_under(x, rules)
 
 drop_apply(f, x; dims) = dropdims(f(x; dims); dims)
 
@@ -69,14 +70,14 @@ get_solution2(input::Tuple) = get_solution2(input...)
 function get_solution2(data, word="departure")
     @unpack rules, my_ticket, nearby_tickets = data
 
-    valid_tickets = [ticket for ticket in nearby_tickets if is_valid_under(ticket, rules)]
+    valid_tickets = filter(is_valid_under(rules), nearby_tickets)
     pushfirst!(valid_tickets, my_ticket)
 
     valid_matrix = [
         all(is_valid_under(ticket[i], rule) for ticket in valid_tickets)
         for rule in rules, i in eachindex(my_ticket)
     ]
-    for i in sortperm(drop_apply(count, valid_matrix, dims=1))
+    for i in sortperm(drop_apply(count, valid_matrix; dims=1))
         i_r = findfirst(valid_matrix[:,i])
         valid_matrix[i_r, Not(i)] .= false
     end
