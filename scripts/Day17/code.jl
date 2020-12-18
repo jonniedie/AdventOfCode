@@ -42,19 +42,20 @@ function make_space(active_matrix, dims=3, steps=6)
 end
 
 # Adjacent indices of (0,0,0,...)
-adj_inds(dims) = (
+adjacent_indices(dims) = (
     Tuple(ijk)
     for ijk in CartesianIndices(ntuple(i->-1:1, dims))
     if !all(Tuple(ijk) .== 0)
 )
 # Get the adjacent cells
-get_adjacent(data, idx) = (data[(adj_idx .+ idx)...] for adj_idx in adj_inds(ndims(data)))
-get_adjacent(data, idx::CartesianIndex) = get_adjacent(data, idx.I)
+get_adjacent(data, idx, adj_inds) = (data[(adj_idx .+ idx)...] for adj_idx in adj_inds)
+get_adjacent(data, idx::CartesianIndex, adj_inds) = get_adjacent(data, idx.I, adj_inds)
 
 # Step the simulation by iterating through the bounding_box axes
 function step!(space, temp, bounding_box)
+    adj_inds = adjacent_indices(ndims(space))
     for idx in CartesianIndices(bounding_box)
-        count_adj = count(get_adjacent(space, idx))
+        count_adj = count(get_adjacent(space, idx, adj_inds))
         temp[idx] = if space[idx] == true
             count_adj==2 || count_adj==3
         else
