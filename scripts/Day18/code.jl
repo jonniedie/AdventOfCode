@@ -23,10 +23,10 @@ end
 
 ## Solution functions
 # Define new addition operator from same precedence pool as *
-⊠(x, y) = x + y
+const ⊠ = +
 
 # And new multiplication operator from same precence pool as +
-⊞(x, y) = x * y
+const ⊞ = *
 
 # Replace the desired operation rules and parse as an Expr object to be evaled
 parse_expr(str, rules...) = Meta.parse(reduce(replace, rules, init=str))
