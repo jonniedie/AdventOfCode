@@ -29,7 +29,7 @@ end
 ⊞(x, y) = x * y
 
 # Replace the desired operation rules and parse as an Expr object to be evaled
-parse_expr(str, rules...) = Meta.parse(reduce((args...)->replace(args...), rules, init=str))
+parse_expr(str, rules...) = Meta.parse(reduce(replace, rules, init=str))
 
 # Create expressions and eval them
 get_solution(data, rules...) = sum(eval.(parse_expr.(data, rules...)))
