@@ -52,10 +52,9 @@ function assess_foods(foods)
         end
     )
 
-    allergenic_ingredients = Symbol[]
-    for allergen in all_allergens
-        append!(allergenic_ingredients, allergen_to_possible_ingredient[allergen])
-        unique!(allergenic_ingredients)
+    allergenic_ingredients = Set{Symbol}()
+    for allergen in all_allergens, ingredient in allergen_to_possible_ingredient[allergen]
+        push!(allergenic_ingredients, ingredient)
     end
     nonallergenic_ingredients = setdiff(all_ingredients, allergenic_ingredients)
     
