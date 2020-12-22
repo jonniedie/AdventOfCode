@@ -73,13 +73,13 @@ end
 
 # Part 1
 function get_solution1(data)
-    @unpack ingredient_dict, nonallergenic_ingredients = assess_foods(deepcopy(data))
+    @unpack ingredient_dict, nonallergenic_ingredients = assess_foods(data)
     return sum(length(ingredient_dict[ingredient]) for ingredient in nonallergenic_ingredients)
 end
 
 # Part 2
 function get_solution2(data)
-    @unpack allergen_to_possible_ingredient = assess_foods(deepcopy(data))
+    @unpack allergen_to_possible_ingredient = assess_foods(data)
     allergen_to_possible_ingredient = collect(pairs(allergen_to_possible_ingredient))
     allergen_to_ingredient = Pair{Symbol,Symbol}[]
 
