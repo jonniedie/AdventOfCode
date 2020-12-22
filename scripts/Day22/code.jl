@@ -35,21 +35,10 @@ function combat(deck1, deck2)
         card1 = popfirst!(deck1)
         card2 = popfirst!(deck2)
 
-        if card1 > card2
-            push!(deck1, card1)
-            push!(deck1, card2)
-        elseif card1 < card2
-            push!(deck2, card2)
-            push!(deck2, card1)
-        else
-            error("Tie!")
-        end
+        card1 > card2 ? push!(deck1, card1, card2) : push!(deck2, card2, card1)
 
-        if isempty(deck1)
-            return (deck=deck2, id=2)
-        elseif isempty(deck2)
-            return (deck=deck1, id=1)
-        end
+        isempty(deck1) && return (deck=deck2, id=2)
+        isempty(deck2) && return (deck=deck1, id=1)
     end
 end
 
@@ -57,43 +46,28 @@ get_solution1(data) = get_solution(combat, data)
 
 # Part 2
 function recursive_combat(deck1, deck2)
-    previous_rounds = Vector{Int}[]
     winning_deck = deck1
 
+    previous_rounds = Vector{Int}[]
     while true
-        if deck1 in previous_rounds
-            return (; deck=winning_deck, id=1)
-        else
-            push!(previous_rounds, copy(deck1))
-        end
+        deck1 in previous_rounds && return (; deck=winning_deck, id=1)
+        
+        push!(previous_rounds, copy(deck1))
 
         card1 = popfirst!(deck1)
         card2 = popfirst!(deck2)
 
         if card1<=length(deck1) && card2<=length(deck2)
             out = recursive_combat(deck1[1:card1], deck2[1:card2])
-            if out.id==1
-                push!(deck1, card1)
-                push!(deck1, card2)
-            else
-                push!(deck2, card2)
-                push!(deck2, card1)
-            end
+            out.id==1 ? push!(deck1, card1, card2) : push!(deck2, card2, card1)
         elseif card1 > card2
-            push!(deck1, card1)
-            push!(deck1, card2)
-        elseif card1 < card2
-            push!(deck2, card2)
-            push!(deck2, card1)
+            push!(deck1, card1, card2)
         else
-            error("Tie!")
+            push!(deck2, card2, card1)
         end
 
-        if isempty(deck1)
-            return (deck=deck2, id=2)
-        elseif isempty(deck2)
-            return (deck=deck1, id=1)
-        end
+        isempty(deck1) && return (deck=deck2, id=2)
+        isempty(deck2) && return (deck=deck1, id=1)
     end
 end
 

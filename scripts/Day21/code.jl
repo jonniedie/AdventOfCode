@@ -7,17 +7,19 @@ using UnPack: @unpack
 
 ## Input getting
 function get_inputs()
-    test_input1 = test_input2 = parse_line.(readlines(IOBuffer("""
+    test_input1 = test_input2 = read_input(IOBuffer("""
         mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
         trh fvjkl sbzzf mxmxvkd (contains dairy)
         sqjhc fvjkl (contains soy)
         sqjhc mxmxvkd sbzzf (contains fish)
-        """)))
+        """))
     test_output1 = 5
     test_output2 = "mxmxvkd,sqjhc,fvjkl"
-    data = parse_line.(readlines(joinpath(@__DIR__, "input.txt")))
+    data = read_input(joinpath(@__DIR__, "input.txt"))
     return (; test_input1, test_input2, test_output1, test_output2, data)
 end
+
+read_input(io) = assess_foods(parse_line.(readlines(io)))
 
 function parse_line(line)
     ingredients, allergens = split(line, r" \(contains |\)", keepempty=false)
@@ -26,8 +28,6 @@ function parse_line(line)
     return (; ingredients, allergens)
 end
 
-
-## Solution functions
 function item_dict(foods, property)
     all_of_type = unique(mapreduce(food->getfield(food, property), vcat, foods))
     type_dict = Dict(
@@ -70,15 +70,16 @@ function assess_foods(foods)
 end
 
 
+## Solution functions
 # Part 1
 function get_solution1(data)
-    @unpack ingredient_dict, nonallergenic_ingredients = assess_foods(data)
+    @unpack ingredient_dict, nonallergenic_ingredients = deepcopy(data)
     return sum(length(ingredient_dict[ingredient]) for ingredient in nonallergenic_ingredients)
 end
 
 # Part 2
 function get_solution2(data)
-    @unpack allergen_to_possible_ingredient = assess_foods(data)
+    @unpack allergen_to_possible_ingredient = deepcopy(data)
     allergen_to_possible_ingredient = collect(pairs(allergen_to_possible_ingredient))
     allergen_to_ingredient = Pair{Symbol,Symbol}[]
 
