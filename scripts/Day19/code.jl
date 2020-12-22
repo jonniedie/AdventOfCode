@@ -54,16 +54,16 @@ end
 
 regex_string(rule_dict, key) = Regex(_regex_string(rule_dict, key))
 
-function get_solution1(data)
-    counter = 0
-    for message in data.messages
-        m = match(regex_string(data.rules, "0"), message)
-        if m !== nothing && length(m[1]) == length(message)
-            counter += 1
-        end
-    end
-    return counter
-end
+# function get_solution1(data)
+#     counter = 0
+#     for message in data.messages
+#         m = match(regex_string(data.rules, "0"), message)
+#         if m !== nothing && length(m[1]) == length(message)
+#             counter += 1
+#         end
+#     end
+#     return counter
+# end
 
 # Part 1
 function get_solution1(data)
@@ -110,21 +110,33 @@ end
 
 function get_solution2(data)
     rules = data.rules
-    rule_42 = regex_string(rules, "42")
-    rule_31 = regex_string(rules, "31")
+    rule_42 = regex_string(rules, "42").pattern
+    rule_31 = regex_string(rules, "31").pattern
+    reg = Regex(rule_42 * "*(" * rule_42 * "*" * "(?1)?" * rule_31 * ") ")
+    
     counter = 0
     for message in data.messages
-        inds_42 = findall(rule_42, message, overlap=false)
-        start = first_nonsequential(inds_42)
-        inds_31 = findall(rule_31, message[start:end], overlap=false)
-        
-        if start+first_nonsequential(inds_31)-2 == length(message) &&
-           length(inds_31) < length(inds_42) &&
-           length(inds_31) > 0
-            
+
+        m = match(reg, message * " ")
+        if m !== nothing && m.match == message * " "
             counter += 1
+            println(message)
+            println(m.match)
+            println()
         end
     end
+    # for message in data.messages
+    #     inds_42 = findall(rule_42, message, overlap=false)
+    #     start = first_nonsequential(inds_42)
+    #     inds_31 = findall(rule_31, message[start:end], overlap=false)
+        
+    #     if start+first_nonsequential(inds_31)-2 == length(message) &&
+    #        length(inds_31) < length(inds_42) &&
+    #        length(inds_31) > 0
+            
+    #         counter += 1
+    #     end
+    # end
     return counter
 end
 

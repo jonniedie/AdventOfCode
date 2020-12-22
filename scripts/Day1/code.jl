@@ -23,7 +23,6 @@ function get_inputs()
     data = read_simple(joinpath(@__DIR__, "input.txt")) #|> sort
 
     return (; test_input1, test_input2, test_output1, test_output2, data)
-
 end
 
 

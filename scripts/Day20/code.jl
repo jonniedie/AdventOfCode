@@ -1,16 +1,17 @@
 module Day20
 
 export get_inputs, get_solution1, get_solution2
+export Tile, rotate!, flipy!, layout_image, concatenate_image
 
 using UnPack: @unpack
+using OffsetArrays: OffsetArray
 
 
 ## Input getting
 function get_inputs()
-    test_input1 = read_input("test_input1.txt")
+    test_input1 = test_input2 = read_input("test_input1.txt")
     test_output1 = 20899048083289
-    test_input2 = nothing
-    test_output2 = nothing
+    test_output2 = 273
     data = read_input("input.txt")
     return (; test_input1, test_input2, test_output1, test_output2, data)
 end
@@ -18,59 +19,100 @@ end
 function read_input(io)
     str = read(joinpath(@__DIR__, io), String)
     tile_strs = split(str, r"\n\n|\r\n\r\n", keepempty=false)
-    return Dict(Tile.(tile_strs))
+    tiles = Tile.(tile_strs)
+    return Dict(tile.id => tile for tile in tiles)
 end
+
+lines_to_image(lines) = BitArray(permutedims(reduce(hcat, collect.(lines)), [2,1]) .== '#')
 
 
 ## Struct definitions
 const Maybe{X} = Union{X, Nothing}
 const PlainIndex = Union{Int, <:AbstractVector}
 
-Base.@kwdef mutable struct Tile <: AbstractMatrix{Bool}
-    image::BitMatrix
-    rotation::Int = 0
-    flipx::Bool = false
-    R::Maybe{Tile} = nothing
-    U::Maybe{Tile} = nothing
-    L::Maybe{Tile} = nothing
-    D::Maybe{Tile} = nothing
+
+mutable struct Connections{T}
+    R::Maybe{T}
+    U::Maybe{T}
+    L::Maybe{T}
+    D::Maybe{T}
 end
+
+Base.@inline Base.getproperty(c::Connections, ::Val{B}) where B = getfield(c, B)
+Base.@inline Base.setproperty!(c::Connections, ::Val{B}, x) where B = setfield!(c, B, x)
+
+
+Base.@kwdef mutable struct Tile <: AbstractMatrix{Bool}
+    id::Int = 0
+    image::Matrix{Bool}
+    rotation::Int = 0
+    flipy::Bool = false
+    parent_connections::Connections = Connections()
+    child_connections::Connections = Connections()
+end
+
+Tile(image::AbstractMatrix) = Tile(; image)
 
 function Tile(str::AbstractString)
     lines = split(str, r"\n|\r\n", keepempty=false)
-    tile_num = parse(Int, only(match(r"Tile.([0-9]+)\:", lines[1]).captures))
-    image = BitArray(permutedims(reduce(hcat, collect.(lines[2:end])), [2,1]) .== '#')
-    return tile_num => Tile(; image)
+    id = parse(Int, only(match(r"Tile.([0-9]+)\:", lines[1]).captures))
+    image = lines_to_image(lines[2:end])
+    return Tile(; id, image)
+end
+
+Connections(; R=nothing, U=nothing, L=nothing, D=nothing) = Connections{Tile}(R, U, L, D)
+
+
+# Base.show(io::IO, tile::Tile) = show(io, MIME("text/plain"), tile)
+function Base.show(io::IO, mime::MIME"text/plain", tile::Tile)
+    println("Tile $(tile.id):")
+    for line in eachrow(tile)
+        for char in line
+            print(char ? '#' : '.')
+        end
+        print('\n')
+    end
 end
 
 Base.size(tile::Tile) = size(tile.image)
 
 Base.getindex(tile::Tile, ij::CartesianIndex) = getindex(tile, ij.I...)
-Base.getindex(tile::Tile, ::Colon, j::PlainIndex) = getindex(tile, axes(tile, 1), j)
-Base.getindex(tile::Tile, i::PlainIndex, ::Colon) = getindex(tile, i, axes(tile, 2))
+Base.getindex(tile::Tile, ::Colon, j::PlainIndex) = getindex(tile, axes(tile.image, 1), j)
+Base.getindex(tile::Tile, i::PlainIndex, ::Colon) = getindex(tile, i, axes(tile.image, 2))
 Base.getindex(tile::Tile, ::Colon, ::Colon) = getindex(tile, axes(tile)...)
 function Base.getindex(tile::Tile, i::PlainIndex, j::PlainIndex)
-    sz_i, sz_j = size(tile) .+ 1
-
     rot = tile.rotation
+    ax_i, ax_j = axes(tile.image)
     if rot == 1
-        i, j = sz_j.-j, i
+        i, j = reverse(ax_j)[j], i
     elseif rot == 2
-        i, j = sz_i.-i, sz_j.-j
+        i, j = reverse(ax_i)[i], reverse(ax_j)[j]
     elseif rot == 3
-        i, j = j, sz_i.-i
+        i, j = j, reverse(ax_i)[i]
     end
 
-    flipx = tile.flipx
-    if flipx
-        j = sz_j .- j
+
+    # sz_i, sz_j = size(tile) .+ 1
+
+    # rot = tile.rotation
+    # if rot == 1
+    #     i, j = sz_j.-j, i
+    # elseif rot == 2
+    #     i, j = sz_i.-i, sz_j.-j
+    # elseif rot == 3
+    #     i, j = j, sz_i.-i
+    # end
+
+    flipy = tile.flipy
+    if flipy
+        i = reverse(ax_i)[i]
     end
 
     return tile.image[i, j]
 end
 
-Base.@inline Base.getproperty(tile::Tile, ::Val{B}) where B = getfield(tile, B)
-Base.@inline Base.setproperty!(tile::Tile, ::Val{B}, x) where B = setfield!(tile, B, x)
+# Base.@inline Base.getproperty(tile::Tile, ::Val{B}) where B = getfield(tile, B)
+# Base.@inline Base.setproperty!(tile::Tile, ::Val{B}, x) where B = setfield!(tile, B, x)
 
 get_border(tile, dir) = get_border(tile, Val(dir))
 get_border(tile, ::Val{:R}) = @view tile[:, end]
@@ -87,27 +129,34 @@ opposite(::Val{:D}) = Val(:U)
 
 # Apply clockwise rotation to a tile and update all tiles attached to it
 rotate!(::Nothing, rot=1) = nothing
-function rotate!(tile, rot=1)
-    @unpack R, U, L, D = tile
+function rotate!(tile::Tile, rot=1)
+    children = tile.child_connections
+    @unpack R, U, L, D = children
+
     tile.rotation = mod(tile.rotation + rot, 4)
-    tile.R = rotate!(U, rot)
-    tile.U = rotate!(L, rot)
-    tile.L = rotate!(D, rot)
-    tile.D = rotate!(R, rot)
+    children.R = rotate!(U, rot)
+    children.U = rotate!(L, rot)
+    children.L = rotate!(D, rot)
+    children.D = rotate!(R, rot)
+
     return tile
 end
 
-flipx!(::Nothing) = nothing
-function flipx!(tile)
-    @unpack R, U, L, D = tile
-    tile.flipx = !tile.flipx
-    tile.R = flipx!(L)
-    tile.L = flipx!(R)
+flipy!(::Nothing) = nothing
+function flipy!(tile::Tile)
+    children = tile.child_connections
+    @unpack R, U, L, D = children
+
+    tile.flipy = !tile.flipy
+    children.R = flipy!(L)
+    children.L = flipy!(R)
+
+    return tile
 end
 
 Base.@inline function connect!(tile, other_tile, B)
-    setproperty!(tile, B, other_tile)
-    setproperty!(other_tile, opposite(B), tile)
+    setproperty!(tile.child_connections, B, other_tile)
+    setproperty!(other_tile.parent_connections, opposite(B), tile)
     return tile
 end
 
@@ -118,7 +167,7 @@ function set_matches!(tile_set, unused_tiles=copy(tile_set))
     while !isempty(unused_tiles)
         for (this_id, this_tile) in connected_tiles
             for b in BORDERS
-                getproperty(this_tile, b) !== nothing && continue
+                getproperty(this_tile.child_connections, b) !== nothing && continue
                 this_border = get_border(this_tile, b)
                 opp_b = opposite(b)
                 for (id, tile) in unused_tiles
@@ -126,9 +175,10 @@ function set_matches!(tile_set, unused_tiles=copy(tile_set))
                     for rot in 1:4
                         rotate!(tile)
                         for flip in 1:2
-                            flipx!(tile)
-                            getproperty(tile, opp_b) !== nothing && continue
+                            flipy!(tile)
+                            getproperty(tile.child_connections, opp_b) !== nothing && continue
                             if get_border(tile, opp_b) == this_border
+                                println("Connecting $id to $this_id")
                                 connect!(this_tile, tile, b)
                                 delete!(unused_tiles, id)
                                 push!(connected_tiles, id=>tile)
@@ -146,23 +196,105 @@ function set_matches!(tile_set, unused_tiles=copy(tile_set))
     return connected_tiles
 end
 
-function layout_image(tiles)
-    idx = (0, 0)
-    image = Dict{Tuple{Int, Int}, Pair{Int, Tile}}()
-    for tile in tiles
-    end
+const x̂ = (0, 1)
+const ŷ = (1, 0)
+
+_layout_image!(image, ::Nothing, idx) = nothing
+
+function _layout_image!(image, tile, idx=(0, 0))
+    tile in values(image) && return image
+    push!(image, idx=>tile)
+
+    @unpack L, R, U, D = tile.child_connections
+    _layout_image!(image, R, idx .+ x̂)
+    _layout_image!(image, L, idx .- x̂)
+    _layout_image!(image, U, idx .- ŷ)
+    _layout_image!(image, D, idx .+ ŷ)
+
+    return image
+end
+
+layout_image(tiles) = _layout_image!(Dict{Tuple{Int, Int}, Tile}(), first(values(tiles)))
+
+function concatenate_image(layout; keep_borders=false)
+    sz_i, sz_j = size(last(first(layout)).image) .- 2
+    inds = keys(layout)
+    min_i, max_i = extrema(first.(inds))
+    min_j, max_j = extrema(last.(inds))
+    ax = axes(layout[1,1].image)
+    ax = keep_borders ? ax : (ax[1][2:end-1], ax[2][2:end-1])
+
+    block_image = [layout[i, j][ax...] for i in min_i:max_i, j in min_j:max_j]
+    cols = reduce.(vcat, eachcol(block_image))
+    image = reduce(hcat, cols)
+
+    # image = falses(sz_i*(max_i-min_i+1), sz_j*(max_j-min_j+1))
+    # for (i, j) in inds
+    #     i_range = (i-min_i)*sz_i .+ (1:sz_i)
+    #     j_range = (j-min_j)*sz_j .+ (1:sz_j)
+    #     image[i_range, j_range] .= layout[i, j][2:end-1, 2:end-1]
+    # end
+
+    
+    return block_image #Tile(; image)
 end
 
 # Part 1
 function get_solution1(data)
-    out = set_matches!(data)
-    corners = filter(x->count(getproperty.(Ref(last(x)), BORDERS) .=== nothing) !== 2, out)
-    return prod(keys(corners))
+    tiles = set_matches!(deepcopy(data))
+    image = layout_image(tiles)
+    inds = keys(image)
+    return prod(image[i, j].id for i in extrema(first.(inds)), j in extrema(last.(inds)))
 end
 
 # Part 2
-function get_solution2(data)
-    return nothing
+function sea_monster_image()
+    str = """
+                      # 
+    #    ##    ##    ###
+     #  #  #  #  #  #   
+    """
+    image = lines_to_image(split(str, r"\n|\r\n", keepempty=false)) |> collect
 end
+
+function get_solution2(data)
+    tiles = set_matches!(deepcopy(data))
+    image = concatenate_image(layout_image(tiles))
+    sea_monster = sea_monster_image()
+    sz_sm_i, sz_sm_j = size(sea_monster)
+    sz_im_i, sz_im_j = size(image)
+    count_sea_monster = count(sea_monster)
+    last_i = sz_im_i - sz_sm_i + 1
+    last_j = sz_im_j - sz_sm_j + 1
+    num_waters = Int[]
+    this_image = falses(size(image)...)
+    num_sea_monsters = 0
+    for rot in 1:4
+        rotate!(image)
+        for flip in 1:2
+            flipy!(image)
+            this_image .= image
+            for j in 1:last_j, i in 1:last_i
+                i_range = i:i+sz_sm_i-1
+                j_range = j:j+sz_sm_j-1
+                this_sub_image = @view this_image[i_range, j_range]
+                this_num_waters = count(this_sub_image .& sea_monster)
+                # println("($i_range, $j_range)")
+                if (i, j) == (17, 2)
+                    println("rot=$(mod(rot, 4)), flip=$(mod(flip, 2))")
+                    show(stdout, MIME("text/plain"), Tile(; id=0, image=this_image[i_range, :]))
+                end
+                if this_num_waters == count_sea_monster
+                    # println("($i_range, $j_range)")
+                    # show(stdout, MIME("text/plain"), image)
+                    num_sea_monsters += 1
+                end
+            end
+        end
+    end
+    return num_sea_monsters
+end
+
+# 303 too low
 
 end
