@@ -2,8 +2,6 @@ module Day21
 
 export get_inputs, get_solution1, get_solution2
 
-using UnPack: @unpack
-
 
 ## Input getting
 function get_inputs()
@@ -32,7 +30,11 @@ function item_dict(foods, property)
     all_of_type = unique(mapreduce(food->getfield(food, property), vcat, foods))
     type_dict = Dict(
         map(all_of_type) do item
-            item=>[i for (i, food) in enumerate(foods) if item in getfield(food, property)]
+            item => [
+                index
+                for (index, food) in enumerate(foods)
+                if item in getfield(food, property)
+            ]
         end
     )
     return type_dict, all_of_type
@@ -72,25 +74,19 @@ end
 
 ## Solution functions
 # Part 1
-function get_solution1(data)
-    @unpack ingredient_dict, nonallergenic_ingredients = deepcopy(data)
-    return sum(length(ingredient_dict[ingredient]) for ingredient in nonallergenic_ingredients)
-end
+get_solution1(data) = sum(length(data.ingredient_dict[ingredient]) for ingredient in data.nonallergenic_ingredients)
 
 # Part 2
 function get_solution2(data)
-    @unpack allergen_to_possible_ingredient = deepcopy(data)
-    allergen_to_possible_ingredient = collect(pairs(allergen_to_possible_ingredient))
-    allergen_to_ingredient = Pair{Symbol,Symbol}[]
+    allergen_to_possible_ingredient = deepcopy(data.allergen_to_possible_ingredient)
 
+    allergen_to_ingredient = Pair{Symbol,Symbol}[]
     while !isempty(allergen_to_possible_ingredient)
-        sort!(allergen_to_possible_ingredient, by=i->length(last(i)))
-        allergen, possible_ingredients = popfirst!(allergen_to_possible_ingredient)
-        ingredient = only(possible_ingredients)
+        allergen = findfirst(ingredients -> length(ingredients)==1, allergen_to_possible_ingredient)
+        ingredient = only(pop!(allergen_to_possible_ingredient, allergen))
+
         push!(allergen_to_ingredient, allergen=>ingredient)
-        for ingredients in last.(allergen_to_possible_ingredient)
-            filter!(i -> i != ingredient, ingredients)
-        end
+        filter!.(x -> x!=ingredient, values(allergen_to_possible_ingredient))
     end
 
     sort!(allergen_to_ingredient, by=first)
