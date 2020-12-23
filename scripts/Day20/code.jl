@@ -81,32 +81,20 @@ Base.getindex(tile::Tile, ::Colon, j::PlainIndex) = getindex(tile, axes(tile.ima
 Base.getindex(tile::Tile, i::PlainIndex, ::Colon) = getindex(tile, i, axes(tile.image, 2))
 Base.getindex(tile::Tile, ::Colon, ::Colon) = getindex(tile, axes(tile)...)
 function Base.getindex(tile::Tile, i::PlainIndex, j::PlainIndex)
-    rot = tile.rotation
-    ax_i, ax_j = axes(tile.image)
-    if rot == 1
-        i, j = reverse(ax_j)[j], i
-    elseif rot == 2
-        i, j = reverse(ax_i)[i], reverse(ax_j)[j]
-    elseif rot == 3
-        i, j = j, reverse(ax_i)[i]
-    end
-
-
-    # sz_i, sz_j = size(tile) .+ 1
-
     # rot = tile.rotation
+    # ax_i, ax_j = axes(tile.image)
     # if rot == 1
-    #     i, j = sz_j.-j, i
+    #     i, j = reverse(ax_j)[j], i
     # elseif rot == 2
-    #     i, j = sz_i.-i, sz_j.-j
+    #     i, j = reverse(ax_i)[i], reverse(ax_j)[j]
     # elseif rot == 3
-    #     i, j = j, sz_i.-i
+    #     i, j = j, reverse(ax_i)[i]
     # end
 
-    flipy = tile.flipy
-    if flipy
-        i = reverse(ax_i)[i]
-    end
+    # flipy = tile.flipy
+    # if flipy
+    #     i = reverse(ax_i)[i]
+    # end
 
     return tile.image[i, j]
 end
@@ -133,6 +121,13 @@ function rotate!(tile::Tile, rot=1)
     children = tile.child_connections
     @unpack R, U, L, D = children
 
+    for r in 1:rot
+        tile_image = copy(tile.image)
+        for i in 1:size(tile.image, 1), (j, j_inv) in enumerate(size(tile.image, 2):-1:1)
+            tile.image[i, j] = tile_image[j_inv, i]
+        end
+    end
+
     tile.rotation = mod(tile.rotation + rot, 4)
     children.R = rotate!(U, rot)
     children.U = rotate!(L, rot)
@@ -146,6 +141,11 @@ flipy!(::Nothing) = nothing
 function flipy!(tile::Tile)
     children = tile.child_connections
     @unpack R, U, L, D = children
+
+    tile_image = copy(tile.image)
+    for (i, i_inv) in enumerate(size(tile.image, 1):-1:1), j in 1:size(tile.image, 2)
+        tile.image[i, j] = tile_image[i_inv, j]
+    end
 
     tile.flipy = !tile.flipy
     children.R = flipy!(L)
@@ -178,7 +178,7 @@ function set_matches!(tile_set, unused_tiles=copy(tile_set))
                             flipy!(tile)
                             getproperty(tile.child_connections, opp_b) !== nothing && continue
                             if get_border(tile, opp_b) == this_border
-                                println("Connecting $id to $this_id")
+                                # println("Connecting $id to $this_id")
                                 connect!(this_tile, tile, b)
                                 delete!(unused_tiles, id)
                                 push!(connected_tiles, id=>tile)
@@ -236,7 +236,7 @@ function concatenate_image(layout; keep_borders=false)
     # end
 
     
-    return block_image #Tile(; image)
+    return Tile(; image)
 end
 
 # Part 1
@@ -281,8 +281,8 @@ function get_solution2(data)
                 this_num_waters = count(this_sub_image .& sea_monster)
                 # println("($i_range, $j_range)")
                 if (i, j) == (17, 2)
-                    println("rot=$(mod(rot, 4)), flip=$(mod(flip, 2))")
-                    show(stdout, MIME("text/plain"), Tile(; id=0, image=this_image[i_range, :]))
+                    # println("rot=$(mod(rot, 4)), flip=$(mod(flip, 2))")
+                    # show(stdout, MIME("text/plain"), Tile(; id=0, image=this_image[i_range, :]))
                 end
                 if this_num_waters == count_sea_monster
                     # println("($i_range, $j_range)")
@@ -292,7 +292,7 @@ function get_solution2(data)
             end
         end
     end
-    return num_sea_monsters
+    return count(image) - num_sea_monsters*count_sea_monster
 end
 
 # 303 too low
