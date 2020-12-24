@@ -39,17 +39,20 @@ end
 function play_game(cups, nturns)
     cups = CircularArray(copy(cups))
     ncups = length(cups)
-    indices = collect(only(axes(cups)))
+    indices = sortperm(cups.data)
     last_cup = last(cups)
     pickup_cups = zeros(Int, 3)
     last_index = 0
 
-    for turn in 1:nturns
-        println("-- move $turn --")
-        println("cups: $cups")
+    @showprogress for turn in 1:nturns
         # last_index = findfirst(==(last_cup), cups)
 
-        current_cup = cups[last_index+1]
+        current_cup = cups[mod(last_index+1, ncups)]
+
+        println("-- move $turn --")
+        println("cups:    $cups")
+        println("indices: $indices")
+        println("current cup: $current_cup")
 
         pickup_indices = last_index+2:last_index+4
         pickup_index = first(pickup_indices)
@@ -67,8 +70,8 @@ function play_game(cups, nturns)
         println("pick up: $pickup_cups")
         println("destination: $destination_cup\n")
 
-        destination_index = findfirst(==(destination_cup), cups)
-        # destination_index = indices[destination_cup]
+        # destination_index = findfirst(==(destination_cup), cups)
+        destination_index = indices[destination_cup]
         if destination_index < pickup_index
             destination_index += ncups
         end
@@ -81,20 +84,17 @@ function play_game(cups, nturns)
             cup = cups[index+3]
             cups.data[index] = cup
 
-            if cup > ncups
-                cup = mod1(cup, ncups)
-            end
-            indices[cup] = index
+            indices[cup] = mod1(index, ncups)
         end
         # cups[pickup_index:destination_index-1] .= @view cups[pickup_index+3:destination_index+2]
         
-        putdown_indices = destination_index-2:destination_index
+        putdown_indices = mod1.(destination_index-2:destination_index, ncups)
         cups[putdown_indices] .= pickup_cups
         indices[pickup_cups] .= putdown_indices
 
         last_cup = current_cup
-        last_index = findfirst(==(last_cup), cups)
-        # last_index = indices[mod1(last_cup, ncups)]
+        # last_index = findfirst(==(last_cup), cups)
+        last_index = indices[last_cup]
         # last_index += 1
         # if (last_index+1) in (pickup_index:destination_index+3)
         #     last_index -= 3
