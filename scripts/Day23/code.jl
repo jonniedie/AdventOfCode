@@ -44,15 +44,15 @@ function play_game(cups, nturns)
     pickup_cups = zeros(Int, 3)
     last_index = 0
 
-    @showprogress for turn in 1:nturns
+    @showprogress 1 for turn in 1:nturns
         # last_index = findfirst(==(last_cup), cups)
 
         current_cup = cups[mod(last_index+1, ncups)]
 
-        println("-- move $turn --")
-        println("cups:    $cups")
-        println("indices: $indices")
-        println("current cup: $current_cup")
+        # println("-- move $turn --")
+        # println("cups:    $cups")
+        # println("indices: $indices")
+        # println("current cup: $current_cup")
 
         pickup_indices = last_index+2:last_index+4
         pickup_index = first(pickup_indices)
@@ -67,11 +67,11 @@ function play_game(cups, nturns)
             end
         end
 
-        println("pick up: $pickup_cups")
-        println("destination: $destination_cup\n")
+        # println("pick up: $pickup_cups")
+        # println("destination: $destination_cup\n")
 
-        # destination_index = findfirst(==(destination_cup), cups)
-        destination_index = indices[destination_cup]
+        destination_index = findfirst(==(destination_cup), cups)
+        # destination_index = indices[destination_cup]
         if destination_index < pickup_index
             destination_index += ncups
         end
@@ -93,8 +93,8 @@ function play_game(cups, nturns)
         indices[pickup_cups] .= putdown_indices
 
         last_cup = current_cup
-        # last_index = findfirst(==(last_cup), cups)
-        last_index = indices[last_cup]
+        last_index = findfirst(==(last_cup), cups)
+        # last_index = indices[last_cup]
         # last_index += 1
         # if (last_index+1) in (pickup_index:destination_index+3)
         #     last_index -= 3
