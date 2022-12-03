@@ -22,6 +22,8 @@ end
 
 for i in 1:25
     include(joinpath("..", "days", "Day$i.jl"))
+
+    Meta.parse("export Day$i") |> eval
 end
 
 end
