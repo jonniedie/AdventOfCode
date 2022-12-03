@@ -4,7 +4,7 @@ To run any of these examples, use the `run_day` function.
 
 Note: Input text files are .gitignored and must be first placed in their `/scripts/DayN` folder with the name `input.txt`.
 
-```julia-repl
+```julia
 julia> using Advent2020
 
 julia> run_day(1)
@@ -47,7 +47,7 @@ get_solution2(inputs.test_input2) == inputs.test_output2
 
 
 You can manually run any of the solutions like this:
-```julia-repl
+```julia
 julia> using Advent2020.Day1
 
 julia> get_solution1(get_inputs().data)
