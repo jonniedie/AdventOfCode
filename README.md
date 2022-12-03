@@ -1,4 +1,4 @@
-# Advent of Code 2020
+# Advent of Code
 
 To run any of these examples, use the `run_day` function.
 
