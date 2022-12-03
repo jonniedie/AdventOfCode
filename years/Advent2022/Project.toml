@@ -4,6 +4,5 @@ authors = ["Jonnie Diegelman <jonniediegelman@gmail.com>"]
 version = "0.1.0"
 
 [deps]
-Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 Common = "ba1b9109-165e-4adc-93bb-3841bfa11de7"
 EventUtils = "8ae8ae43-0fe5-488b-a1b4-37edb6aad1d2"

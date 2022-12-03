@@ -1,7 +1,6 @@
 module Day2
 
 using ..Advent2022: split_string_lines, read_input
-using Combinatorics
 
 export get_inputs, get_solution1, get_solution2
 
@@ -13,14 +12,14 @@ parse_lines(str) = split_string_lines(str) .|> parse_line
 
 function get_inputs()
     test_input1 = """
-    A Y
-    B X
-    C Z
-    """ |> parse_lines
+        A Y
+        B X
+        C Z
+        """ |> parse_lines
     test_output1 = 15
     test_input2 = test_input1
     test_output2 = 12
-    data = parse_lines(read_input(2))
+    data = read_input(2) |> parse_lines
     return (; test_input1, test_input2, test_output1, test_output2, data)
 end
 
@@ -57,6 +56,7 @@ total_score(data; strategy) = sum(x -> turn_score(x; strategy), data)
 
 # Part 1
 part_1_score(turn) = total_score(turn; strategy = (p1, p2) -> xyz_to_shape_dict[p2])
+
 function get_solution1(data)
     strategy = (p1, p2) -> xyz_to_shape(p2)
     return total_score(data; strategy)

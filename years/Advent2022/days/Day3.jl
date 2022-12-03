@@ -7,13 +7,13 @@ using Base: splat
 ## Input getting
 function get_inputs()
     test_input1 = """
-    vJrwpWtwJgWrhcsFMMfFFhFp
-    jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
-    PmmdzqPrVvPwwTWBwg
-    wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
-    ttgJtRGJQctTZtZT
-    CrZsJsPPZsGzwwsLwLmpwMDw
-    """ |> split_string_lines
+        vJrwpWtwJgWrhcsFMMfFFhFp
+        jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+        PmmdzqPrVvPwwTWBwg
+        wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+        ttgJtRGJQctTZtZT
+        CrZsJsPPZsGzwwsLwLmpwMDw
+        """ |> split_string_lines
     test_output1 = 157
     test_input2 = test_input1
     test_output2 = 70
@@ -28,7 +28,7 @@ function split_sack(sack)
     return (sack[begin:n], sack[n+1:end])
 end
 
-priority(item) = isuppercase(item) ? Int(item) - 63 + 25 : Int(item) - 96
+priority(item) = isuppercase(item) ? Int(item) - 38 : Int(item) - 96
 
 function group_by_three(elves)
     return map(1:length(elves)÷3) do i
@@ -39,12 +39,12 @@ end
 
 broadcaster(f) = x -> f.(x)
 
-find_shared_item(collections) = mapreduce(broadcaster(unique), intersect, collections)
+find_shared_item(collections) = mapreduce(broadcaster(unique), intersect, collections) |> only
 
 # Part 1
-get_solution1(data) = sum(priority ∘ only ∘ find_shared_item ∘ split_sack, data)
+get_solution1(data) = sum(priority ∘ find_shared_item ∘ split_sack, data)
 
 # Part 2
-get_solution2(data) = sum(priority ∘ only ∘ find_shared_item, group_by_three(data))
+get_solution2(data) = sum(priority ∘ find_shared_item, group_by_three(data))
 
 end
