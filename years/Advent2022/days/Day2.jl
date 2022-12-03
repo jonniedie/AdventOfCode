@@ -55,8 +55,6 @@ end
 total_score(data; strategy) = sum(x -> turn_score(x; strategy), data)
 
 # Part 1
-part_1_score(turn) = total_score(turn; strategy = (p1, p2) -> xyz_to_shape_dict[p2])
-
 function get_solution1(data)
     strategy = (p1, p2) -> xyz_to_shape(p2)
     return total_score(data; strategy)
