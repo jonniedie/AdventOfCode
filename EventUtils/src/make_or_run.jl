@@ -1,32 +1,3 @@
-function make_my_day(data_dir, scripts_dir, n=day(today()))
-    code_file = joinpath(scripts_dir, "Day$n.jl")
-    template_file = joinpath(@__DIR__, "template.jl")
-
-    !isdir(data_dir) && mkdir(data_dir)
-
-    (tmp_path, tmp_f) = mktemp()
-
-    !isfile(code_file) && open(template_file, read=true, write=true) do f
-        for (line_num, line) in enumerate(eachline(f, keep=true))
-            if line_num==1
-                write(tmp_f, "module Day"*string(n)*"\n")
-            else
-                write(tmp_f, line)
-            end
-        end
-        close(tmp_f)
-        mv(tmp_path, code_file)
-    end
-
-    n ≤ day(today()) && download_input("")
-
-    edit(code_file)
-
-    return nothing
-end
-
-
-
 """
     run_day(year, day; test=true, time=true)
     run_day(mod::Module; test=true, time=true)

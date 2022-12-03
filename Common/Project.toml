@@ -1,0 +1,4 @@
+name = "Common"
+uuid = "ba1b9109-165e-4adc-93bb-3841bfa11de7"
+authors = ["Jonnie Diegelman <jonniediegelman@gmail.com>"]
+version = "0.1.0"
