@@ -2,6 +2,7 @@ module Day18
 
 using ..Advent2022: split_string_lines, read_input
 
+export get_inputs, get_solution1, get_solution2
 
 ## Input getting
 function get_inputs()

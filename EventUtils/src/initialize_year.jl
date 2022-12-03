@@ -1,9 +1,10 @@
-function create_day_module(dir, day)
+function create_day_module(dir, year, day)
     template = """
     module Day$day
 
-    using ..Advent2022: split_string_lines, read_input
+    using ..Advent$year: split_string_lines, read_input
 
+    export get_inputs, get_solution1, get_solution2
 
     ## Input getting
     function get_inputs()
@@ -38,15 +39,30 @@ function create_year_module(dir, year)
     template = """
     module Advent$year
 
-    using EventUtils: EventUtils, day, today
-
-    for i in 1:25
-        include(joinpath(\"..\", \"days\", \"Day\$i.jl\"))
-    end
-
+    using Common: split_string_lines
+    using EventUtils: EventUtils, day, today, run_day
+    
+    export run_day
+    
     function download_input(day=day(today()))
-        inputs_dir = joinpath(@__DIR__, \"..\", \"inputs\")
-        return EventUtils.download_input(inputs_dir, $year, day)
+        inputs_dir = joinpath(@__DIR__, "..", "inputs")
+        return EventUtils.download_input(inputs_dir, 2022, day)
+    end
+    
+    function read_input(day)
+        file = joinpath(@__DIR__, "..", "inputs", "Day\$day.txt")
+        if isfile(file)
+            return read(file, String)
+        else
+           @warn "Inputs for day \$day not found. Use `EventUtils.download_input` to get the day's inputs"
+           return ""
+        end
+    end
+    
+    for i in 1:25
+        include(joinpath("..", "days", "Day\$i.jl"))
+    
+        Meta.parse("export Day\$i") |> eval
     end
     
     end
@@ -69,7 +85,7 @@ function initialize_year(root_dir, year=year(today()))
         days_dir = joinpath(year_dir, "days")
         mkdir(days_dir)
         for day in 1:25
-            create_day_module(days_dir, day)
+            create_day_module(days_dir, year, day)
         end
 
         # Create the module file
