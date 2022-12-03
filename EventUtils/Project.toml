@@ -1,0 +1,11 @@
+name = "EventUtils"
+uuid = "8ae8ae43-0fe5-488b-a1b4-37edb6aad1d2"
+authors = ["Jonnie Diegelman <jonniediegelman@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
