@@ -31,7 +31,6 @@ abc_to_shape(letter) = Shape(Int(letter) - 64)
 xyz_to_shape(letter) = Shape(Int(letter) - 87)
 
 const win_map = Dict(ROCK=>SCISSORS, PAPER=>ROCK, SCISSORS=>PAPER)
-
 const lose_map = Dict(values(win_map) .=> keys(win_map))
 
 function outcome_score(shapes...)

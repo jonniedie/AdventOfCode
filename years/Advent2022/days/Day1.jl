@@ -1,5 +1,7 @@
 module Day1
 
+using ..Advent2022: split_string_lines, read_input
+
 export get_inputs, get_solution1, get_solution2
 
 
@@ -30,7 +32,7 @@ function get_inputs()
     test_output1 = 24000
     test_input2 = test_input1
     test_output2 = 45000
-    data = read(joinpath(@__DIR__, "..", "inputs", "Day1.txt"), String) |> parse_inputs
+    data = read_input(1) |> parse_inputs
     return (; test_input1, test_input2, test_output1, test_output2, data)
 end
 
