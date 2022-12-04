@@ -1,11 +1,12 @@
 module Day4
 
 using ..Advent2022: split_string_lines, read_input
+using Base: splat
 
 export get_inputs, get_solution1, get_solution2
 
 ## Input getting
-parse_sections(str) = range(parse.(Int, split(str, '-'))...)
+parse_sections(str) = (parse.(Int, split(str, '-'))...,)
 
 parse_line(str) = Tuple(parse_sections.(split(str, ',')))
 
@@ -27,14 +28,12 @@ end
 
 
 ## Solution functions
-function fully_contains(sections)
-    (a1, b1), (a2, b2) = extrema.(sections)
-    return (a1<=a2 && b1>=b2) || (a2<=a1 && b2>=b1)
+function fully_contains((s1, s2))
+    return (s1[1]<=s2[1] && s1[2]>=s2[2]) || (s2[1]<=s1[1] && s2[2]>=s1[2])
 end
 
-function overlaps(sections)
-    (a1, b1), (a2, b2) = extrema.(sections)
-    return (b1>=a2 && a1<=a2) || (b2>=a1 && a2<=a1)
+function overlaps((s1, s2))
+    return (s1[2]>=s2[1] && s1[1]<=s2[1]) || (s2[2]>=s1[1] && s2[1]<=s1[1])
 end
 
 # Part 1
