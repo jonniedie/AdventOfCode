@@ -1,6 +1,7 @@
 module Day4
 
 using ..Advent2022: split_string_lines, read_input
+using Base: splat
 
 export get_inputs, get_solution1, get_solution2
 
