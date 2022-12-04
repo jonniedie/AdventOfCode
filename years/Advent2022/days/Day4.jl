@@ -28,12 +28,14 @@ end
 
 
 ## Solution functions
-function fully_contains((s1, s2))
-    return (s1[1]<=s2[1] && s1[2]>=s2[2]) || (s2[1]<=s1[1] && s2[2]>=s1[2])
+function fully_contains(sections)
+    (a1, b1), (a2, b2) = extrema.(sections)
+    return (a1<=a2 && b1>=b2) || (a2<=a1 && b2>=b1)
 end
 
-function overlaps((s1, s2))
-    return (s1[2]>=s2[1] && s1[1]<=s2[1]) || (s2[2]>=s1[1] && s2[1]<=s1[1])
+function overlaps(sections)
+    (a1, b1), (a2, b2) = extrema.(sections)
+    return (b1>=a2 && a1<=a2) || (b2>=a1 && a2<=a1)
 end
 
 # Part 1
