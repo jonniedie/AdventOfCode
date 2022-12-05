@@ -14,17 +14,24 @@ function run_day(mod::Module; test=true, time=true)
 
     # Do not pass if tests don't check out
     test && @testset "Input tests" begin
-        @testset "Part 1" begin @test get_solution1(test_input1) == test_output1 end
-        @testset "Part 2" begin @test get_solution2(test_input2) == test_output2 end
+        @testset "Part 1" begin @test get_solution1(deepcopy(test_input1)) == test_output1 end
+        @testset "Part 2" begin @test get_solution2(deepcopy(test_input2)) == test_output2 end
+    end
+
+    if time
+        println("Data loading time:")
+        @time get_inputs()
     end
 
     # Print and time solution 1
-    println("Solution 1: $(get_solution1(data))")
-    time && @time get_solution1(data)
+    println("Solution 1: $(get_solution1(deepcopy(data)))")
+    time_data = deepcopy(data)
+    time && @time get_solution1(time_data)
 
     # Print and time solution 2
-    println("Solution 2: $(get_solution2(data))")
-    time && @time get_solution2(data)
+    println("Solution 2: $(get_solution2(deepcopy(data)))")
+    time_data = deepcopy(data)
+    time && @time get_solution2(time_data)
 
     return nothing
 end
