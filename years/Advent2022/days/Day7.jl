@@ -210,7 +210,7 @@ const UNUSED_SPACE = AVAILABLE_SPACE - sizeof(get_inputs().data)
 find_directory_to_delete(file::File, best_size) = best_size
 function find_directory_to_delete(dir::Directory, best_size=typemax(Int))
     sz = sizeof(dir)
-    if SPACE_TO_FREE - UNUSED_SPACE ≤ sz && sz < best_size
+    if SPACE_TO_FREE - UNUSED_SPACE ≤ sz < best_size
         best_size = sz
     end
     children_best_size = reduce(values(dir.children); init=best_size) do best_size, child
